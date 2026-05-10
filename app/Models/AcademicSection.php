@@ -1,0 +1,25 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class AcademicSection extends Model
+{
+    protected $guarded = [];
+
+    public function class()
+    {
+        return $this->belongsTo(AcademicClass::class, 'class_id');
+    }
+
+    public function feeAllocations()
+    {
+        return $this->hasMany(FeeAllocation::class);
+    }
+
+    public function feeInvoices()
+    {
+        return $this->hasMany(FeeInvoice::class);
+    }
+}
