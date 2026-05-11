@@ -45,7 +45,7 @@ class AdmitCardTemplateComponent extends Component
     public bool $is_active = true;
 
     protected function rules(): array
-    {
+    {    dd(2);
         return [
             'name'             => 'required|string|max:255',
             'exam_type'        => 'required|string',
