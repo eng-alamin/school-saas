@@ -94,6 +94,13 @@ class CategoryComponent extends Component
 
     public function render()
     {
+
+//     dd([
+//     tenant(),
+//     \Illuminate\Support\Facades\DB::connection()->getDatabaseName(),
+//     (new \App\Models\InventoryCategory())->getConnectionName(),
+// ]);
+
         $categories = InventoryCategory::query()
             ->when($this->search, fn($q) => $q->where('name', 'like', "%{$this->search}%"))
             ->orderBy($this->sortField, $this->sortDirection)

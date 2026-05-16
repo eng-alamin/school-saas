@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->integer('numeric')->nullable();
-            $table->foreignId('section_id')->constrained('academic_sections')->cascadeOnDelete();
             $table->timestamps();
         });
     }

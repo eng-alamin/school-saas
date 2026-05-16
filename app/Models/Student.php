@@ -52,4 +52,9 @@ class Student extends Model
     {
         return $this->morphMany(Sale::class, 'saleable');
     }
+
+    public function leaveApplications()
+    {
+        return $this->morphMany(LeaveApplication::class,'applicable');
+    }
 }

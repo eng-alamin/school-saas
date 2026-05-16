@@ -12,7 +12,11 @@ return [
     |
     */
 
-    'middleware_group' => ['web', 'universal', InitializeTenancyByDomain::class],
+    'middleware_group' => [
+        'web',
+        \Stancl\Tenancy\Middleware\InitializeTenancyByDomain::class,
+        \Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains::class,
+    ],
 
     /*
     |---------------------------------------------------------------------------

@@ -29,10 +29,10 @@
                     </div>
                 @endif
 
-                <a href="{{ route('admin.event.types') }}" class="btn-sm btn-outline bg-dark text-white">
+                <a href="{{ route('admin.event.types', ['tenant' => tenant('id')]) }}" class="btn-sm btn-outline bg-dark text-white">
                     <span class="material-icons-round">add</span> Add Types
                 </a>
-                <a href="{{ route('admin.event.add') }}" class="btn-sm btn-outline bg-dark text-white">
+                <a href="{{ route('admin.event.add', ['tenant' => tenant('id')]) }}" class="btn-sm btn-outline bg-dark text-white">
                     <span class="material-icons-round">add</span> Add Event
                 </a>
             </div>
@@ -93,7 +93,7 @@
                                 </td>
                                 <td>
                                     <div class="d-flex gap-1">
-                                        <a href="{{ route('admin.event.edit', $event->id) }}"
+                                        <a href="{{ route('admin.event.edit', ['tenant' => tenant('id'), 'id' => $event->id]) }}"
                                            class="act-btn edit" title="Edit">
                                             <span class="material-icons-round">drive_file_rename_outline</span>
                                         </a>
@@ -109,7 +109,7 @@
                                 <td colspan="8" class="text-center py-5 text-muted">
                                     <i class="bi bi-inbox display-5 d-block mb-2 opacity-25"></i>
                                     No events found.
-                                    <a href="{{ route('admin.event.create') }}">Create one now</a>.
+                                    <a href="{{ route('admin.event.add', ['tenant' => tenant('id')]) }}">Create one now</a>.
                                 </td>
                             </tr>
                         @endforelse

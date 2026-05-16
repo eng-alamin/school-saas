@@ -54,7 +54,7 @@
         </div>
 
         <div class="col-md-12 text-center">
-            <a href="{{ route('admin.homework.add') }}" class="btn-pink w-100 d-flex justify-content-center align-items-center">
+            <a href="{{ route('admin.homework.add', ['tenant' => tenant('id')]) }}" class="btn-pink w-100 d-flex justify-content-center align-items-center">
                 <span class="material-icons-round" style="font-size:16px">add</span><span>New Homework</span>
             </a>
         </div>

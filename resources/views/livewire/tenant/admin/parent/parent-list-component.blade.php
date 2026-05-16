@@ -20,7 +20,7 @@
 
           <!-- buttons right -->
 
-            <a href="{{ route('admin.parent.add') }}" target="_blank" id="newParentBtn" class="btn-outline btn-outline bg-dark text-white">
+            <a href="{{ route('admin.parent.add', ['tenant' => tenant('id')]) }}" target="_blank" id="newParentBtn" class="btn-outline btn-outline bg-dark text-white">
             <span class="material-icons-round">add</span> <span id="newParentBtn">New Parent</span>
           </a>
 

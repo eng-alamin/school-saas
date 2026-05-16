@@ -54,11 +54,11 @@
         </div>
         <div class="nav2-collapse {{ str_contains(request()->url(), 'inventory/') == true ? 'show' : '' }}">
           <ul>
-            <li class="nav2-item"><a href="{{route('admin.inventory.products')}}" class="nav2-link {{ Route::is('admin.inventory.products') == true ? 'active' : '' }}"><span class="nav2-icon">C</span><span class="nav2-label" id="nav-products">Products</span></a></li>
-            <li class="nav2-item"><a href="{{route('admin.inventory.stores')}}" class="nav2-link {{ Route::is('admin.inventory.stores') == true ? 'active' : '' }}"><span class="nav2-icon">C</span><span class="nav2-label" id="nav-products">Stores</span></a></li>
-            <li class="nav2-item"><a href="{{route('admin.inventory.suppliers')}}" class="nav2-link {{ Route::is('admin.inventory.suppliers') == true ? 'active' : '' }}"><span class="nav2-icon">C</span><span class="nav2-label" id="nav-products">Suppliers</span></a></li>
-            <li class="nav2-item"><a href="{{route('admin.inventory.purchase.list')}}" class="nav2-link {{ Route::is('admin.inventory.purchase.list') == true ? 'active' : '' }}"><span class="nav2-icon">C</span><span class="nav2-label" id="nav-products">Purchases</span></a></li>
-            <li class="nav2-item"><a href="{{route('admin.inventory.sale.list')}}" class="nav2-link {{ Route::is('admin.inventory.sale.list') == true ? 'active' : '' }}"><span class="nav2-icon">C</span><span class="nav2-label" id="nav-products">Sales</span></a></li>
+            <li class="nav2-item"><a href="{{ route('admin.inventory.products', ['tenant' => tenant('id')]) }}" class="nav2-link {{ Route::is('admin.inventory.products') == true ? 'active' : '' }}"><span class="nav2-icon">C</span><span class="nav2-label" id="nav-products">Products</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.inventory.stores', ['tenant' => tenant('id')]) }}" class="nav2-link {{ Route::is('admin.inventory.stores') == true ? 'active' : '' }}"><span class="nav2-icon">C</span><span class="nav2-label" id="nav-products">Stores</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.inventory.suppliers', ['tenant' => tenant('id')]) }}" class="nav2-link {{ Route::is('admin.inventory.suppliers') == true ? 'active' : '' }}"><span class="nav2-icon">C</span><span class="nav2-label" id="nav-products">Suppliers</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.inventory.purchase.list', ['tenant' => tenant('id')]) }}" class="nav2-link {{ Route::is('admin.inventory.purchase.list') == true ? 'active' : '' }}"><span class="nav2-icon">C</span><span class="nav2-label" id="nav-products">Purchases</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.inventory.sale.list', ['tenant' => tenant('id')]) }}" class="nav2-link {{ Route::is('admin.inventory.sale.list') == true ? 'active' : '' }}"><span class="nav2-icon">C</span><span class="nav2-label" id="nav-products">Sales</span></a></li>
           </ul>
         </div>
       </li>
@@ -71,21 +71,21 @@
         </div>
         <div class="nav2-collapse {{ Route::is('tenant.student.create') == true ? 'show' : '' }}">
           <ul>
-            <li class="nav2-item"><a href="{{route('tenant.student.create')}}" class="nav2-link {{ Route::is('tenant.student.create') == true ? 'active' : '' }}"><span class="nav2-icon">C</span><span class="nav2-label" id="nav-createadmission">Create Admission</span></a></li>
+            <li class="nav2-item"><a href="{{route('tenant.student.create', ['tenant' => tenant('id')]) }}" class="nav2-link {{ Route::is('tenant.student.create') == true ? 'active' : '' }}"><span class="nav2-icon">C</span><span class="nav2-label" id="nav-createadmission">Create Admission</span></a></li>
             <li class="nav2-item"><a href="#" class="nav2-link"><span class="nav2-icon">O</span><span class="nav2-label" id="nav-onlineadmission">Online Admission</span></a></li>
           </ul>
         </div>
       </li>
 
       <li class="nav1-item">
-        <a class="nav1-link {{ Route::is('tenant.student.list') == true ? 'active' : '' }}" href="{{route('tenant.student.list')}}">
+        <a class="nav1-link {{ Route::is('tenant.student.list') == true ? 'active' : '' }}" href="{{route('tenant.student.list', ['tenant' => tenant('id')]) }}">
           <span class="material-icons-round nav-icon">school</span>
           <span class="nav-label" id="nav-students">Students</span>
         </a>
       </li>
 
       <li class="nav1-item">
-        <a class="nav1-link {{ str_contains(request()->url(), 'parent/') == true ? 'active' : '' }}" href="{{route('admin.parent.list')}}">
+        <a class="nav1-link {{ str_contains(request()->url(), 'parent/') == true ? 'active' : '' }}" href="{{route('admin.parent.list', ['tenant' => tenant('id')]) }}">
           <span class="material-icons-round nav-icon">groups</span>
           <span class="nav-label" id="nav-parents">Parents</span>
         </a>
@@ -99,9 +99,9 @@
         </div>
         <div class="nav2-collapse {{ str_contains(request()->url(), 'employee') == true ? 'show' : '' }}">
           <ul>
-            <li class="nav2-item"><a href="{{route('admin.employee.list')}}" class="nav2-link {{ str_contains(request()->url(), 'employee/list') == true ? 'active' : '' }}"><span class="nav2-icon">L</span><span class="nav2-label" id="nav-employee-list">Employee List</span></a></li>
-            <li class="nav2-item"><a href="{{route('admin.employee.departments')}}" class="nav2-link {{ str_contains(request()->url(), 'employee/departments') == true ? 'active' : '' }}"><span class="nav2-icon">D</span><span class="nav2-label" id="nav-department">Department</span></a></li>
-            <li class="nav2-item"><a href="{{route('admin.employee.designations')}}" class="nav2-link {{ str_contains(request()->url(), 'employee/designations') == true ? 'active' : '' }}"><span class="nav2-icon">D</span><span class="nav2-label" id="nav-designation">Designation</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.employee.list', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'employee/list') == true ? 'active' : '' }}"><span class="nav2-icon">L</span><span class="nav2-label" id="nav-employee-list">Employee List</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.employee.departments', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'employee/departments') == true ? 'active' : '' }}"><span class="nav2-icon">D</span><span class="nav2-label" id="nav-department">Department</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.employee.designations', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'employee/designations') == true ? 'active' : '' }}"><span class="nav2-icon">D</span><span class="nav2-label" id="nav-designation">Designation</span></a></li>
           </ul>
         </div>
       </li>
@@ -114,42 +114,42 @@
         </div>
         <div class="nav2-collapse {{ str_contains(request()->url(), 'card/') == true ? 'show' : '' }}">
           <ul>
-            <li class="nav2-item"><a href="{{route('admin.card.id-card-templates')}}" class="nav2-link {{ str_contains(request()->url(), 'card/id-card-templates') == true ? 'active' : '' }}"><span class="nav2-icon">G</span><span class="nav2-label" id="nav-idcard-template">Id Card Templete</span></a></li>
-            <li class="nav2-item"><a href="{{route('admin.card.student-id-cards')}}" class="nav2-link {{ str_contains(request()->url(), 'card/student-id-cards') == true ? 'active' : '' }}"><span class="nav2-icon">T</span><span class="nav2-label" id="nav-student-id-card">Student Id Card</span></a></li>
-            <li class="nav2-item"><a href="{{route('admin.card.employee-id-cards')}}" class="nav2-link {{ str_contains(request()->url(), 'card/employee-id-cards') == true ? 'active' : '' }}"><span class="nav2-icon">N</span><span class="nav2-label" id="nav-employee-id-card">Employee Id Card</span></a></li>
-            <li class="nav2-item"><a href="{{route('admin.card.admit-card-templates')}}" class="nav2-link {{ str_contains(request()->url(), 'card/admit-card-templates') == true ? 'active' : '' }}"><span class="nav2-icon">N</span><span class="nav2-label" id="nav-admit-card-template">Admit Card Templete</span></a></li>
-            <li class="nav2-item"><a href="{{route('admin.card.generate-admit-cards')}}" class="nav2-link {{ str_contains(request()->url(), 'card/admit-card-generate') == true ? 'active' : '' }}"><span class="nav2-icon">N</span><span class="nav2-label" id="nav-admit-card-generate">Admit Card Generate</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.card.id-card-templates', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'card/id-card-templates') == true ? 'active' : '' }}"><span class="nav2-icon">G</span><span class="nav2-label" id="nav-idcard-template">Id Card Templete</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.card.student-id-cards', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'card/student-id-cards') == true ? 'active' : '' }}"><span class="nav2-icon">T</span><span class="nav2-label" id="nav-student-id-card">Student Id Card</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.card.employee-id-cards', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'card/employee-id-cards') == true ? 'active' : '' }}"><span class="nav2-icon">N</span><span class="nav2-label" id="nav-employee-id-card">Employee Id Card</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.card.admit-card-templates', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'card/admit-card-templates') == true ? 'active' : '' }}"><span class="nav2-icon">N</span><span class="nav2-label" id="nav-admit-card-template">Admit Card Templete</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.card.generate-admit-cards', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'card/admit-card-generate') == true ? 'active' : '' }}"><span class="nav2-icon">N</span><span class="nav2-label" id="nav-admit-card-generate">Admit Card Generate</span></a></li>
           </ul>
         </div>
       </li>
 
       <li class="nav1-item">
-        <div class="nav1-link" onclick="toggleNav1(this)">
+        <div class="nav1-link {{ str_contains(request()->url(), 'certificate/') == true ? 'active open' : '' }}" onclick="toggleNav1(this)">
           <span class="material-icons-round nav-icon">workspace_premium</span>
           <span class="nav-label" id="nav-certificate">Certificate</span>
           <span class="material-icons-round nav-arrow">expand_more</span>
         </div>
-        <div class="nav2-collapse">
+        <div class="nav2-collapse {{ str_contains(request()->url(), 'certificate/') == true ? 'show' : '' }}">
           <ul>
-            <li class="nav2-item"><div class="nav2-link"><span class="nav2-icon">G</span><span class="nav2-label" id="nav-general">Certificate Templete</span></div></li>
-            <li class="nav2-item"><div class="nav2-link"><span class="nav2-icon">T</span><span class="nav2-label" id="nav-timeline">Generate Student </span></div></li>
-            <li class="nav2-item"><div class="nav2-link"><span class="nav2-icon">T</span><span class="nav2-label" id="nav-timeline">Generate Employee  </span></div></li>
+            <li class="nav2-item"><a href="{{route('admin.certificate.list-template', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'certificate/list-template') == true ? 'active' : '' }}"><span class="nav2-icon">G</span><span class="nav2-label" id="nav-idcard-template">Certificate Templete</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.certificate.generate-student', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'certificate/generate-student') == true ? 'active' : '' }}"><span class="nav2-icon">T</span><span class="nav2-label" id="nav-student-id-card">Generate Student</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.certificate.generate-employee', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'certificate/generate-employee') == true ? 'active' : '' }}"><span class="nav2-icon">N</span><span class="nav2-label" id="nav-employee-id-card">Generate Employee</span></a></li>
           </ul>
         </div>
       </li>
 
       <li class="nav1-item">
-        <div class="nav1-link" onclick="toggleNav1(this)">
+        <div class="nav1-link {{ str_contains(request()->url(), 'salary') || str_contains(request()->url(), 'leave') ? 'active open' : '' }}" onclick="toggleNav1(this)">
           <span class="material-icons-round nav-icon">manage_accounts</span>
           <span class="nav-label" id="nav-human-resource">Human Resource</span>
           <span class="material-icons-round nav-arrow">expand_more</span>
         </div>
-        <div class="nav2-collapse">
+        <div class="nav2-collapse {{ str_contains(request()->url(), 'salary') || str_contains(request()->url(), 'leave') == true ? 'show' : '' }}">
           <ul>
-            <li class="nav2-item"><div class="nav2-link"><span class="nav2-icon">G</span><span class="nav2-label" id="nav-payroll">Payroll</span></div></li>
-            <li class="nav2-item"><div class="nav2-link"><span class="nav2-icon">T</span><span class="nav2-label" id="nav-salary">Salary</span></div></li>
-            <li class="nav2-item"><div class="nav2-link"><span class="nav2-icon">N</span><span class="nav2-label" id="nav-leave">Leave</span></div></li>
-            <li class="nav2-item"><div class="nav2-link"><span class="nav2-icon">N</span><span class="nav2-label" id="nav-award">Award</span></div></li>
+            <li class="nav2-item"><a href="{{route('admin.salary.list-template', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'admin.salary.list-template') == true ? 'active' : '' }}"><span class="nav2-icon">T</span><span class="nav2-label" id="nav-idcard-template">Salary Template</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.salary.assign', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'admin.salary.assign') == true ? 'active' : '' }}"><span class="nav2-icon">A</span><span class="nav2-label" id="nav-idcard-template">Salary Assign</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.salary.payment', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'admin.salary.payment') == true ? 'active' : '' }}"><span class="nav2-icon">P</span><span class="nav2-label" id="nav-idcard-template">Salary Payment</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.leave.applications', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'leave') == true ? 'active' : '' }}"><span class="nav2-icon">P</span><span class="nav2-label" id="nav-idcard-template">Leaves</span></a></li>
           </ul>
         </div>
       </li>
@@ -162,10 +162,10 @@
         </div>
         <div class="nav2-collapse {{ str_contains(request()->url(), 'academic') == true ? 'show' : '' }}">
           <ul>
-            <li class="nav2-item"><a href="{{route('tenant.academic.classes')}}" class="nav2-link {{ str_contains(request()->url(), 'academic/classes') == true ? 'active' : '' }}"><span class="nav2-icon">G</span><span class="nav2-label" id="nav-class-section">Class & Section</span></a></li>
-            <li class="nav2-item"><a href="{{route('tenant.academic.subjects')}}" class="nav2-link {{ str_contains(request()->url(), 'academic/subjects') == true ? 'active' : '' }}"><span class="nav2-icon">T</span><span class="nav2-label" id="nav-subject">Subject</span></a></li>
-            <li class="nav2-item"><a href="{{route('tenant.academic.class-assign')}}" class="nav2-link {{ str_contains(request()->url(), 'academic/class-assign') == true ? 'active' : '' }}"><span class="nav2-icon">T</span><span class="nav2-label" id="nav-class-assign">Class Assign</span></a></li>
-            <li class="nav2-item"><a href="{{route('tenant.academic.class-schedule.list')}}" class="nav2-link {{ str_contains(request()->url(), 'academic/class-schedule') == true ? 'active' : '' }}"><span class="nav2-icon">N</span><span class="nav2-label" id="nav-class-schedule">Class Schedule</span></a></li>
+            <li class="nav2-item"><a href="{{route('tenant.academic.classes', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'academic/classes') == true ? 'active' : '' }}"><span class="nav2-icon">G</span><span class="nav2-label" id="nav-class-section">Class & Section</span></a></li>
+            <li class="nav2-item"><a href="{{route('tenant.academic.subjects', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'academic/subjects') == true ? 'active' : '' }}"><span class="nav2-icon">T</span><span class="nav2-label" id="nav-subject">Subject</span></a></li>
+            <li class="nav2-item"><a href="{{route('tenant.academic.class-assign', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'academic/class-assign') == true ? 'active' : '' }}"><span class="nav2-icon">T</span><span class="nav2-label" id="nav-class-assign">Class Assign</span></a></li>
+            <li class="nav2-item"><a href="{{route('tenant.academic.class-schedule.list', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'academic/class-schedule') == true ? 'active' : '' }}"><span class="nav2-icon">N</span><span class="nav2-label" id="nav-class-schedule">Class Schedule</span></a></li>
             <li class="nav2-item"><div class="nav2-link"><span class="nav2-icon">N</span><span class="nav2-label" id="nav-teacher-schedule">Teacher Schedule</span></div></li>
             <li class="nav2-item"><div class="nav2-link"><span class="nav2-icon">N</span><span class="nav2-label" id="nav-student-promotion">Student Promotion</span></div></li>
           </ul>
@@ -173,7 +173,7 @@
       </li>
 
       <li class="nav1-item">
-        <a class="nav1-link {{ str_contains(request()->url(), 'homework') == true ? 'active' : '' }}" href="{{ route('admin.homework.list') }}">
+        <a class="nav1-link {{ str_contains(request()->url(), 'homework') == true ? 'active' : '' }}" href="{{ route('admin.homework.list', ['tenant' => tenant('id')])  }}">
           <span class="material-icons-round nav-icon">assignment</span>
           <span class="nav-label" id="nav-home-work">Home Work</span>
         </a>
@@ -187,8 +187,8 @@
         </div>
         <div class="nav2-collapse {{ str_contains(request()->url(), 'exam') == true ? 'show' : '' }}">
           <ul>
-            <li class="nav2-item"><a href="{{route('admin.exam.setups')}}" class="nav2-link {{ str_contains(request()->url(), 'exam/setups') == true ? 'active' : '' }}"><span class="nav2-icon">G</span><span class="nav2-label" id="nav-exams">Exams</span></a></li>
-            <li class="nav2-item"><a href="{{route('admin.exam.schedule.list')}}" class="nav2-link {{ str_contains(request()->url(), 'exam/schedule') == true ? 'active' : '' }}"><span class="nav2-icon">T</span><span class="nav2-label" id="nav-exam-schedule">Exam Schedule</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.exam.setups', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'exam/setups') == true ? 'active' : '' }}"><span class="nav2-icon">G</span><span class="nav2-label" id="nav-exams">Exams</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.exam.schedule.list', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'exam/schedule') == true ? 'active' : '' }}"><span class="nav2-icon">T</span><span class="nav2-label" id="nav-exam-schedule">Exam Schedule</span></a></li>
             <li class="nav2-item"><div class="nav2-link"><span class="nav2-icon">N</span><span class="nav2-label" id="nav-marks">Marks</span></div></li>
           </ul>
         </div>
@@ -202,15 +202,15 @@
         </div>
         <div class="nav2-collapse {{ str_contains(request()->url(), 'attendance') == true ? 'show' : '' }}">
           <ul>
-            <li class="nav2-item"><a href="{{route('admin.attendance.students')}}" class="nav2-link {{ str_contains(request()->url(), 'attendance/students') == true ? 'active' : '' }}"><span class="nav2-icon">G</span><span class="nav2-label" id="nav-student">Student</span></a></li>
-            <li class="nav2-item"><a href="{{route('admin.attendance.employees')}}" class="nav2-link {{ str_contains(request()->url(), 'attendance/employees') == true ? 'active' : '' }}"><span class="nav2-icon">G</span><span class="nav2-label" id="nav-student">Enployee</span></a></li>
-            <li class="nav2-item"><a href="{{route('admin.attendance.exams')}}" class="nav2-link {{ str_contains(request()->url(), 'attendance/exams') == true ? 'active' : '' }}"><span class="nav2-icon">G</span><span class="nav2-label" id="nav-student">Exam</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.attendance.students', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'attendance/students') == true ? 'active' : '' }}"><span class="nav2-icon">G</span><span class="nav2-label" id="nav-student">Student</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.attendance.employees', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'attendance/employees') == true ? 'active' : '' }}"><span class="nav2-icon">G</span><span class="nav2-label" id="nav-student">Enployee</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.attendance.exams', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'attendance/exams') == true ? 'active' : '' }}"><span class="nav2-icon">G</span><span class="nav2-label" id="nav-student">Exam</span></a></li>
           </ul>
         </div>
       </li>
 
       <li class="nav1-item">
-        <a href="{{route('admin.event.list')}}" class="nav1-link {{ str_contains(request()->url(), 'event') == true ? 'active' : '' }}">
+        <a href="{{route('admin.event.list', ['tenant' => tenant('id')]) }}" class="nav1-link {{ str_contains(request()->url(), 'event') == true ? 'active' : '' }}">
           <span class="material-icons-round nav-icon">event</span>
           <span class="nav-label" id="nav-events">Events</span>
         </a>
@@ -239,13 +239,13 @@
         </div>
         <div class="nav2-collapse {{ str_contains(request()->url(), 'student-accounting') == true ? 'show' : '' }}">
           <ul>
-            <li class="nav2-item"><a href="{{route('admin.student-accounting.fee.types')}}" class="nav2-link {{ str_contains(request()->url(), 'student-accounting/fee-types') == true ? 'active' : '' }}"><span class="nav2-icon">G</span><span class="nav2-label" id="nav-fees-type">Fees Type</span></a></li>
-            <li class="nav2-item"><a href="{{route('admin.student-accounting.fee.groups')}}" class="nav2-link {{ str_contains(request()->url(), 'student-accounting/fee-groups') == true ? 'active' : '' }}"><span class="nav2-icon">T</span><span class="nav2-label" id="nav-timeline">Fees Group</span></a></li>
-            <li class="nav2-item"><a href="{{route('admin.student-accounting.fee.fines')}}" class="nav2-link {{ str_contains(request()->url(), 'student-accounting/fee-fines') == true ? 'active' : '' }}"><span class="nav2-icon">N</span><span class="nav2-label" id="nav-fine-setup">Fine Setup</span></a></li>
-            <li class="nav2-item"><a href="{{route('admin.student-accounting.fee.allocations')}}" class="nav2-link {{ str_contains(request()->url(), 'student-accounting/fee-allocations') == true ? 'active' : '' }}"><span class="nav2-icon">N</span><span class="nav2-label" id="nav-fees-allocation">Fees Allocation</span></a></li>
-            <li class="nav2-item"><a href="{{route('admin.student-accounting.fee.invoices')}}" class="nav2-link {{ str_contains(request()->url(), 'student-accounting/fee-invoices') == true ? 'active' : '' }}"><span class="nav2-icon">N</span><span class="nav2-label" id="nav-fees-pay-invoice">Fees Pay / Invoice</span></a></li>
-            <li class="nav2-item"><a href="{{route('admin.student-accounting.fee.types')}}" class="nav2-link {{ str_contains(request()->url(), 'student-accounting/fee-types') == true ? 'active' : '' }}"><span class="nav2-icon">N</span><span class="nav2-label" id="nav-due-fees-invoice">Due Fees Invoice</span></a></li>
-            <li class="nav2-item"><a href="{{route('admin.student-accounting.fee.types')}}" class="nav2-link {{ str_contains(request()->url(), 'student-accounting/fee-types') == true ? 'active' : '' }}"><span class="nav2-icon">N</span><span class="nav2-label" id="nav-fees-reminder">Fees Reminder</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.student-accounting.fee.types', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'student-accounting/fee-types') == true ? 'active' : '' }}"><span class="nav2-icon">G</span><span class="nav2-label" id="nav-fees-type">Fees Type</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.student-accounting.fee.groups', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'student-accounting/fee-groups') == true ? 'active' : '' }}"><span class="nav2-icon">T</span><span class="nav2-label" id="nav-timeline">Fees Group</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.student-accounting.fee.fines', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'student-accounting/fee-fines') == true ? 'active' : '' }}"><span class="nav2-icon">N</span><span class="nav2-label" id="nav-fine-setup">Fine Setup</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.student-accounting.fee.allocations', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'student-accounting/fee-allocations') == true ? 'active' : '' }}"><span class="nav2-icon">N</span><span class="nav2-label" id="nav-fees-allocation">Fees Allocation</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.student-accounting.fee.invoices', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'student-accounting/fee-invoices') == true ? 'active' : '' }}"><span class="nav2-icon">N</span><span class="nav2-label" id="nav-fees-pay-invoice">Fees Pay / Invoice</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.student-accounting.fee.types', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'student-accounting/fee-types') == true ? 'active' : '' }}"><span class="nav2-icon">N</span><span class="nav2-label" id="nav-due-fees-invoice">Due Fees Invoice</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.student-accounting.fee.types', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'student-accounting/fee-types') == true ? 'active' : '' }}"><span class="nav2-icon">N</span><span class="nav2-label" id="nav-fees-reminder">Fees Reminder</span></a></li>
           </ul>
         </div>
       </li>
@@ -258,11 +258,11 @@
         </div>
         <div class="nav2-collapse {{ str_contains(request()->url(), 'office-accounting') == true ? 'show' : '' }}">
           <ul>
-            <li class="nav2-item"><a href="{{route('admin.office-accounting.accounts')}}" class="nav2-link {{ str_contains(request()->url(), 'office-accounting/accounts') == true ? 'active' : '' }}"><span class="nav2-icon">A</span><span class="nav2-label" id="nav-account">Account</span></a></li>
-            <li class="nav2-item"><a href="{{route('admin.office-accounting.deposit.list')}}" class="nav2-link {{ str_contains(request()->url(), 'office-accounting/voucher-deposit-list') == true ? 'active' : '' }}"><span class="nav2-icon">D</span><span class="nav2-label" id="nav-new-deposit">Deposit</span></a></li>
-            <li class="nav2-item"><a href="{{route('admin.office-accounting.expense.list')}}" class="nav2-link {{ str_contains(request()->url(), 'office-accounting/voucher-expense-list') == true ? 'active' : '' }}"><span class="nav2-icon">E</span><span class="nav2-label" id="nav-new-expense">Expense</span></a></li>
-            <li class="nav2-item"><a href="{{route('admin.office-accounting.transactions')}}" class="nav2-link {{ str_contains(request()->url(), 'office-accounting/transactions') == true ? 'active' : '' }}"><span class="nav2-icon">T</span><span class="nav2-label" id="nav-all-transactions">Transactions</span></a></li>
-            <li class="nav2-item"><a href="{{route('admin.office-accounting.heads')}}" class="nav2-link {{ str_contains(request()->url(), 'office-accounting/voucher-head') == true ? 'active' : '' }}"><span class="nav2-icon">H</span><span class="nav2-label" id="nav-voucher-head">Voucher Head</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.office-accounting.accounts', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'office-accounting/accounts') == true ? 'active' : '' }}"><span class="nav2-icon">A</span><span class="nav2-label" id="nav-account">Account</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.office-accounting.deposit.list', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'office-accounting/voucher-deposit-list') == true ? 'active' : '' }}"><span class="nav2-icon">D</span><span class="nav2-label" id="nav-new-deposit">Deposit</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.office-accounting.expense.list', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'office-accounting/voucher-expense-list') == true ? 'active' : '' }}"><span class="nav2-icon">E</span><span class="nav2-label" id="nav-new-expense">Expense</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.office-accounting.transactions', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'office-accounting/transactions') == true ? 'active' : '' }}"><span class="nav2-icon">T</span><span class="nav2-label" id="nav-all-transactions">Transactions</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.office-accounting.heads', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'office-accounting/voucher-head') == true ? 'active' : '' }}"><span class="nav2-icon">H</span><span class="nav2-label" id="nav-voucher-head">Voucher Head</span></a></li>
           </ul>
         </div>
       </li>

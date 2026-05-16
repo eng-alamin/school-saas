@@ -14,6 +14,7 @@ class Tenant extends BaseTenant implements TenantWithDatabase
 {
     use HasDatabase, HasDomains;
 
-    protected $fillable = ['id', 'school_name', 'email', 'plan'];
+    protected $guarded = [];
+
 }
     
