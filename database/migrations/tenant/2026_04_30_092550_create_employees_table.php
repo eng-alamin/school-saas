@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('employees', function (Blueprint $table) {
             $table->id();
 
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            
             // Academic Details
             $table->string('role');
             $table->date('joining_date')->nullable();
@@ -34,10 +36,6 @@ return new class extends Migration
             $table->text('present_address')->nullable();
             $table->text('permanent_address')->nullable();
             $table->string('photo')->nullable();
-
-            // Login Details
-            $table->string('username')->unique();
-            $table->string('password');
 
             // Bank Info
             $table->string('bank_name')->nullable();

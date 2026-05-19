@@ -15,7 +15,12 @@ class AcademicClass extends Model
 
     public function sections()
     {
-        return $this->belongsToMany(AcademicSection::class, 'academic_class_section', 'class_id', 'section_id');
+        return $this->belongsToMany(
+            AcademicSection::class,
+            'academic_class_sections',
+            'class_id',
+            'section_id'
+        );
     }
 
     public function feeAllocations()

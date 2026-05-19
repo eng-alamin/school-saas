@@ -8,6 +8,16 @@ class AcademicSection extends Model
 {
     protected $guarded = [];
 
+    public function classes()
+    {
+        return $this->belongsToMany(
+            AcademicClass::class,
+            'academic_class_sections',
+            'section_id',
+            'class_id'
+        );
+    }
+
     public function class()
     {
         return $this->belongsTo(AcademicClass::class, 'class_id');

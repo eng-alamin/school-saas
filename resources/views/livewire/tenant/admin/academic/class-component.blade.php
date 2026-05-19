@@ -1,315 +1,251 @@
-<div class="mat-card" style="padding-top:28px">
+<div>
 
-      <!-- floating header -->
-      <div class="mat-card-header header-pink-gradient">
-        <h5 id="cardHeaderTitleAllClasses">All Classes</h5>
-        <p id="cardHeaderSubtitle">A lightweight, extendable, dependency-free javascript HTML table plugin.</p>
-      </div>
+    <div class="card">
 
-      <!-- Table Card -->
-      <div class="table-card">
-        <!-- toolbar -->
-        <div class="card-toolbar">
-          <div class="card-toolbar-title">
-            <!-- search in table -->
-            <div style="position:relative;display:inline-flex;align-items:center">
-              <span class="material-icons-round" style="position:absolute;left:10px;font-size:17px;color:var(--muted);pointer-events:none">search</span>
-              <input type="text" id="tableSearch" placeholder="Search pages…" style="border:1px solid rgba(0,0,0,.1);border-radius:8px;padding:7px 12px 7px 32px;font-size:.78rem;font-family:inherit;color:var(--dark);outline:none;background:#f8f9fa;width:220px"/>
-            </div>
-          </div>
-
-          <!-- buttons right -->
-          <a href="{{ route('tenant.academic.classes') }}" class="btn-outline bg-dark text-white">
-            <span class="material-icons-round" style="font-size:16px">flight_class</span><span>Class</span>
-          </a>
-          <a href="{{ route('tenant.academic.sections') }}" class="btn-outline">
-            <span class="material-icons-round" style="font-size:16px">border_inner</span><span>Section</span>
-          </a>
-          <a href="{{ route('tenant.academic.categories') }}" class="btn-outline">
-            <span class="material-icons-round" style="font-size:16px">category</span><span>Category</span>
-          </a>
-          <button class="btn-outline" data-bs-toggle="modal" data-bs-target="#openCreateModal">
-            <span class="material-icons-round">add</span> <span id="newClassBtn">New Class</span>
-          </button>
-
+        <div class="mat-card-header header-pink-gradient">
+            <h5 id="cardHeaderTitleAllClasses">All Classes</h5>
+            <p id="cardHeaderSubtitle">Manage classes, create, update, and organize easily.</p>
         </div>
 
-        <!-- table -->
-        <div class="table-responsive">
-          <table class="mat-table" id="productsTable">
-            <thead>
-              <tr>
-                <th onclick="sortTable(0)" id="sl"><span id="th-sl-lbl">SL</span> <span class="sort-icon"></span></th>
-                <th onclick="sortTable(1)" id="th-name"><span id="th-name-lbl">Name</span> <span class="sort-icon"></span></th>
-                <th onclick="sortTable(2)" id="th-numeric"><span id="th-numeric-lbl">Numeric</span> <span class="sort-icon"></span></th>
-                <th onclick="sortTable(3)" id="th-section"><span id="th-section-lbl">Section</span> <span class="sort-icon"></span></th>
-                <th id="th-actions"><span id="th-actions-lbl">Action</span></th>
-              </tr>
-            </thead>
-            <tbody id="tableBody"></tbody>
-          </table>
-        </div>
-
-        <!-- pagination -->
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px 18px;flex-wrap:wrap;gap:10px">
-          <span style="font-size:.75rem;color:var(--muted)" id="pageInfo"></span>
-          <div style="display:flex;gap:4px" id="paginationBtns"></div>
-        </div>
-      </div>
-
-    <!-- ═══════ Open Create Modal ═══════ -->
-    <div wire:ignore.self class="modal fade" id="openCreateModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title">Add New Class</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <div class="card-header border-0">
+            <div class="card-toolbar">
+                <div class="card-toolbar-title">
+                    <div style="position:relative;display:inline-flex;align-items:center">
+                        <span class="material-icons-round" style="position:absolute;left:10px;font-size:17px;color:var(--muted);pointer-events:none">search</span>
+                        <input type="text" wire:model.live.debounce.300ms="search" placeholder="Search" style="border:1px solid rgba(0,0,0,.1);border-radius:8px;padding:7px 12px 7px 32px;font-size:.78rem;font-family:inherit;color:var(--dark);outline:none;background:#f8f9fa;width:220px"/>
+                    </div>
                 </div>
-                <div class="modal-body p-4" style="display:flex;flex-direction:column;gap:14px">
-                    <div>
-                        <label style="font-size:.75rem;font-weight:600;color:var(--dark);display:block;margin-bottom:4px">Name *</label>
-                        <input wire:model="name" type="text" placeholder="e.g. A" style="width:100%;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:8px 12px;font-size:.82rem;font-family:inherit;outline:none"/>
-                        @error('name') <span class="text-danger">{{ $message }}</span> @enderror
-                    </div>
 
-                    <div>
-                        <label style="font-size:.75rem;font-weight:600;color:var(--dark);display:block;margin-bottom:4px">Numeric *</label>
-                        <input wire:model="numeric" type="text" placeholder="e.g. 1" style="width:100%;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:8px 12px;font-size:.82rem;font-family:inherit;outline:none"/>
-                        @error('numeric') <span class="text-danger">{{ $message }}</span> @enderror
-                    </div>
-                    <div>
-                        <label style="font-size:.75rem;font-weight:600;color:var(--dark);display:block;margin-bottom:4px">Section</label>
-                        <select wire:model="section_id" style="width:100%;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:8px 12px;font-size:.82rem;font-family:inherit;outline:none;background:#fff">
-                            <option value="">Select Section</option>
-                            @foreach($sections as $section)
-                                <option value="{{ $section->id }}">{{ $section->name }}</option>
-                            @endforeach
+                @if($classes->total() > 10)
+                    <div class="col-md-2">
+                        <select class="form-select form-select-sm" wire:model.live="perPage">
+                            <option value="10">10 / page</option>
+                            <option value="25">25 / page</option>
+                            <option value="50">50 / page</option>
                         </select>
-                        @error('section_id') <span class="text-danger">{{ $message }}</span> @enderror
                     </div>
-                </div>
-                <div class="modal-footer border-0 gap-2">
-                    <button class="btn-outline" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" wire:click="save" class="btn-pink"><span class="material-icons-round" style="font-size:16px">add</span> Save</button>
+                @endif
+
+                <a href="{{ route('tenant.academic.classes', ['tenant' => tenant('id')]) }}" class="btn-outline bg-dark text-white">
+                    <span class="material-icons-round" style="font-size:16px">flight_class</span><span>Class</span>
+                </a>
+                <a href="{{ route('tenant.academic.sections', ['tenant' => tenant('id')]) }}" class="btn-outline">
+                    <span class="material-icons-round" style="font-size:16px">border_inner</span><span>Section</span>
+                </a>
+                <a href="{{ route('tenant.academic.categories', ['tenant' => tenant('id')]) }}" class="btn-outline">
+                    <span class="material-icons-round" style="font-size:16px">category</span><span>Category</span>
+                </a>
+
+                <button class="btn-outline bg-dark text-white" wire:click="openCreate">
+                    <span class="material-icons-round">add</span> <span>New Class</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="card-body pt-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>SL</th>
+                            <th wire:click="sortBy('name')" style="cursor:pointer">
+                                Name @if($sortField === 'name') {!! $sortDirection === 'asc' ? '↑' : '↓' !!} @endif
+                            </th>
+                            <th wire:click="sortBy('numeric')" style="cursor:pointer">
+                                Numeric @if($sortField === 'numeric') {!! $sortDirection === 'asc' ? '↑' : '↓' !!} @endif
+                            </th>
+                            <th>Section</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($classes as $i => $class)
+                        <tr>
+                            <td class="text-muted">{{ $classes->firstItem() + $i }}</td>
+                            <td>{{ $class->name }}</td>
+                            <td>{{ $class->numeric }}</td>
+                            <td>
+                                @forelse($class->sections as $section)
+                                    <span class="badge bg-primary">
+                                        {{ $section->name }}
+                                    </span>
+                                @empty
+                                    —
+                                @endforelse
+                            </td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <button class="act-btn edit" title="Edit" wire:click="openEdit({{ $class->id }})">
+                                        <span class="material-icons-round">drive_file_rename_outline</span>
+                                    </button>
+                                    <button class="act-btn delete" title="Delete" wire:click="confirmDeleteRecord({{ $class->id }})">
+                                        <span class="material-icons-round">delete</span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                <i class="bi bi-inbox display-5 d-block mb-2 opacity-25"></i>
+                                No classes found. <a href="#" wire:click.prevent="openCreate">Create one now</a>.
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card-footer border-0 bg-white d-flex align-items-center justify-content-between flex-wrap gap-2 py-2 px-3">
+            <small class="text-muted">Showing {{ $classes->firstItem() ?? 0 }}–{{ $classes->lastItem() ?? 0 }} of {{ $classes->total() }}</small>
+            {{ $classes->links('vendor.pagination.custom') }}
+        </div>
+
+    </div>
+
+    {{-- ===== CREATE/EDIT MODAL ===== --}}
+    @if($showModal)
+        <div class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,.5);" wire:ignore.self>
+            <div class="modal-dialog modal-md modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header border-0">
+                        <h5 class="modal-title">{{ $editId ? 'Edit' : 'Create' }} Class</h5>
+                        <button type="button" class="btn-close" wire:click="$set('showModal', false)"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label class="form-label">Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control @error('name') is-invalid @enderror" wire:model.defer="name" placeholder="e.g. Class One">
+                                @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Numeric <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control @error('numeric') is-invalid @enderror" wire:model.defer="numeric" placeholder="e.g. 1">
+                                @error('numeric') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="col-md-12">
+                                <div wire:ignore>
+                                    <label class="form-label">Section <span class="text-danger">*</span></label>
+                                    <select class="form-select w-100 selectpicker @error('sectionIds') is-invalid @enderror" wire:model.defer="sectionIds" multiple title="Select Section...">
+                                        @foreach($sections as $section)
+                                            <option value="{{ $section->id }}">{{ $section->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('sectionIds') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0">
+                        <button type="button" class="btn btn-light" wire:click="$set('showModal', false)">Cancel</button>
+                        <button type="button" class="btn bg-dark text-white" wire:click="save" wire:loading.attr="disabled">
+                            <span wire:loading wire:target="save" class="spinner-border spinner-border-sm me-1"></span>
+                            {{ $editId ? 'Update' : 'Create' }}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    @endif
 
-    <!-- ═══════ Open Edit Modal ═══════ -->
-    <div wire:ignore.self class="modal fade" id="openEditModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-
-                <div class="modal-header border-0">
-                    <h5 class="modal-title">Edit Class</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-
-                <div class="modal-body p-4" style="display:flex;flex-direction:column;gap:14px">
-                    
-                    <input type="hidden" wire:model="class_id"/>
-
-                    <div>
-                        <label style="font-size:.75rem;font-weight:600;color:var(--dark);display:block;margin-bottom:4px">Name *</label>
-                        <input wire:model="name" type="text" placeholder="e.g. A" style="width:100%;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:8px 12px;font-size:.82rem;font-family:inherit;outline:none"/>
-                        @error('name') <span class="text-danger">{{ $message }}</span> @enderror
+    {{-- ===== DELETE CONFIRM ===== --}}
+    @if($confirmDelete)
+        <div class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,.5);">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-body text-center py-4">
+                        <div style="width:56px;height:56px;border-radius:50%;background:#fee2e2;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+                            <i class="bi bi-exclamation-triangle text-danger" style="font-size:1.5rem;"></i>
+                        </div>
+                        <h6 class="fw-700">Delete Class?</h6>
+                        <p class="text-muted small">This action cannot be undone.</p>
                     </div>
-
-                    <div>
-                        <label style="font-size:.75rem;font-weight:600;color:var(--dark);display:block;margin-bottom:4px">Numeric *</label>
-                        <input wire:model="numeric" type="text" placeholder="e.g. 1" style="width:100%;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:8px 12px;font-size:.82rem;font-family:inherit;outline:none"/>
-                        @error('numeric') <span class="text-danger">{{ $message }}</span> @enderror
+                    <div class="modal-footer justify-content-center border-0 pt-0">
+                        <button class="btn btn-light btn-sm" wire:click="$set('confirmDelete', false)">Cancel</button>
+                        <button class="btn btn-danger btn-sm" wire:click="deleteRecord">
+                            <span wire:loading wire:target="deleteRecord" class="spinner-border spinner-border-sm me-1"></span>
+                            Delete
+                        </button>
                     </div>
                 </div>
-
-                <div class="modal-footer border-0">
-                    <button class="btn-outline" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" wire:click="update({{ $class_id }})" class="btn-pink">Update</button>
-                </div>
-
             </div>
         </div>
-    </div>
-
-    <!-- ═══════ DELETE CONFIRM MODAL ═══════ -->
-    <div class="modal fade" id="deleteModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-sm">
-            <div class="modal-content text-center p-3">
-            <div style="width:52px;height:52px;border-radius:50%;background:var(--pink-light);display:flex;align-items:center;justify-content:center;margin:12px auto">
-                <span class="material-icons-round" style="color:var(--pink);font-size:26px">delete_outline</span>
-            </div>
-            <h6 style="font-weight:700;margin:8px 0 4px">Delete this class?</h6>
-            <p style="font-size:.78rem;color:var(--muted);margin-bottom:16px" id="deleteName">This action cannot be undone.</p>
-            <div style="display:flex;gap:8px;justify-content:center">
-                <button class="btn-outline" data-bs-dismiss="modal">Cancel</button>
-                <button class="btn-pink" onclick="confirmDelete()">Delete</button>
-            </div>
-            </div>
-        </div>
-    </div>
+    @endif
 
 </div>
 
+@push('styles')
+<style>
+    :root {
+        --primary: rgba(33, 37, 41);
+        --primary-light: rgba(239,84,84,.12);
+    }
+
+    .card { border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
+    .card-header { background: #fff; border-bottom: 1px solid var(--border); border-radius: 12px 12px 0 0 !important; padding: 16px 20px; }
+
+    .form-label { font-size: .8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
+    .form-control, .form-select {
+        border-radius: 8px; border: 1px solid var(--border);
+        font-size: .875rem; padding: .45rem .75rem;
+        transition: border-color .2s, box-shadow .2s;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light);
+    }
+
+    .btn-sm { font-size: .78rem; padding: .3rem .65rem; border-radius: 6px; }
+</style>
+@endpush
+
+@push('styles')
+        {{-- selectpicker --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css">
+@endpush
 @push('scripts')
+    {{-- selectpicker --}}
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
     <script>
-        const classes = @json($classes);
-        const perPage = 10;
-        let currentPage = 1;
-        let sortCol = -1, sortAsc = true;
-        let filteredData = [...classes];
-        let deleteTargetId = null;
+        // $('.selectpicker').selectpicker();
+        document.addEventListener('livewire:init', function () {
 
-        function getVal(p, col) {
-            switch(col) {
-                case 0: return p.id;
-                case 1: return p.name ?? p.name ?? '';
-                case 2: return Number(p.numeric) || 0;
-                case 3: return p.section ? p.section.name : '';
-                default: return '';
+            function refreshPicker() {
+                $('.selectpicker').selectpicker('refresh');
             }
-        }
 
-        function renderTable() {
-            const start = (currentPage - 1) * perPage;
-            const rows  = filteredData.slice(start, start + perPage);
-            const tbody = document.getElementById('tableBody');
-
-            tbody.innerHTML = rows.map((p, index) => `
-                <tr id="row-${p.id}">
-                    <td data-label="SL"><span>${start + index + 1}</span></td>
-                    <td data-label="Name"><span>${p.name ?? p.name ?? ''}</span></td>
-                    <td data-label="Numeric"><span>${p.numeric ?? p.numeric ?? ''}</span></td>
-                    <td data-label="Section"><span>${p.section ? p.section.name : 'N/A'}</span></td>
-                    <td data-label="Actions">
-                        <div class="action-btns">
-                            <button class="act-btn edit" title="Edit" onclick="openEditModal(${p.id})">
-                                <span class="material-icons-round">drive_file_rename_outline</span>
-                            </button>
-                            <button class="act-btn delete" title="Delete" onclick="openDeleteModal(${p.id})">
-                                <span class="material-icons-round">delete</span>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
-
-            renderPagination();
-        }
-
-        function renderPagination() {
-            const total = Math.ceil(filteredData.length / perPage);
-            const info  = document.getElementById('pageInfo');
-            const wrap  = document.getElementById('paginationBtns');
-            const s = (currentPage-1)*perPage+1, e = Math.min(currentPage*perPage, filteredData.length);
-            info.textContent = filteredData.length ? `Showing ${s}–${e} of ${filteredData.length}` : 'No results';
-
-            const btnStyle = (active) => `
-                display:inline-flex;align-items:center;justify-content:center;
-                width:32px;height:32px;border-radius:8px;border:1px solid rgba(0,0,0,.1);
-                font-size:.78rem;font-weight:600;cursor:pointer;font-family:inherit;
-                background:${active?'linear-gradient(195deg,#ec407a,#d81b60)':'#fff'};
-                color:${active?'#fff':'var(--dark)'};
-                box-shadow:${active?'0 4px 12px var(--pink-shadow)':'none'};
-            `;
-
-            let html = `<button style="${btnStyle(false)}" onclick="changePage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
-            for (let i=1;i<=total;i++) {
-                html += `<button style="${btnStyle(i===currentPage)}" onclick="changePage(${i})">${i}</button>`;
+            function initPicker() {
+                $('.selectpicker').selectpicker();
+                // refreshPicker();
             }
-            html += `<button style="${btnStyle(false)}" onclick="changePage(${currentPage+1})" ${currentPage===total||total===0?'disabled':''}>›</button>`;
-            wrap.innerHTML = html;
-        }
 
-        function changePage(p) {
-            const total = Math.ceil(filteredData.length / perPage);
-            if (p < 1 || p > total) return;
-            currentPage = p;
-            renderTable();
-        }
+            // initial load
+            setTimeout(() => {
+                initPicker();
+            }, 300);
 
-        /* Search */
-        document.getElementById('tableSearch').addEventListener('input', function() {
-            const q = this.value.toLowerCase();
-            filteredData = classes.filter(p =>
-                String(p.id ?? '').toLowerCase().includes(q) ||
-                String(p.name ?? p.name ?? '').toLowerCase().includes(q) ||
-                String(p.numeric ?? p.numeric ?? '').toLowerCase().includes(q) ||
-                String(p.section ? p.section.name : '').toLowerCase().includes(q)
-            );
-            currentPage = 1;
-            renderTable();
-        });
-
-        /* Sort */
-        function sortTable(col) { 
-            const ths = document.querySelectorAll('.mat-table th');
-            ths.forEach(th => th.classList.remove('sorted-asc','sorted-desc'));
-
-            if (sortCol === col) sortAsc = !sortAsc;
-            else { sortCol = col; sortAsc = true; }
-
-            ths[col].classList.add(sortAsc ? 'sorted-asc' : 'sorted-desc');
-
-            filteredData.sort((a, b) => {
-                const av = getVal(a, col);
-                const bv = getVal(b, col);
-                if (typeof av === 'number' && typeof bv === 'number') {
-                    return sortAsc ? av - bv : bv - av;
-                }
-                return sortAsc
-                    ? String(av).localeCompare(String(bv))
-                    : String(bv).localeCompare(String(av));
+            // Livewire update fix
+            Livewire.hook('message.processed', () => {
+                setTimeout(() => {
+                    refreshPicker();
+                }, 50);
             });
 
-            renderTable();
-        }
-
-        // Open Edit Modal
-        function openEditModal(id) {
-            @this.call('edit', id);
-            new bootstrap.Modal(document.getElementById('openEditModal')).show();
-        }
-
-        // Open Delete Modal
-        function openDeleteModal(id) {
-            deleteTargetId = id;
-            const p = classes.find(x => x.id === id);
-            if (!p) return;
-            const displayName = p.name ?? p.name ?? 'This record';
-            document.getElementById('deleteName').textContent = `"${displayName}" will be permanently deleted.`;
-            new bootstrap.Modal(document.getElementById('deleteModal')).show();
-        }
-
-        // Confirm delete
-        function confirmDelete() {
-            Livewire.dispatch('deleteConfirmed', { id: deleteTargetId });
-
-            const idx = classes.findIndex(x => x.id === deleteTargetId);
-            if (idx > -1) {
-                classes.splice(idx, 1);
-                filteredData = [...classes];
-                renderTable();
-            }
-            bootstrap.Modal.getInstance(document.getElementById('deleteModal')).hide();
-        }
-
-        // Save/Update এর পর refresh
-        document.addEventListener('livewire:initialized', () => {
-            Livewire.on('refresh-list', (data) => {
-                const newData = data[0];
-                classes.length = 0;
-                newData.forEach(d => classes.push(d));
-                filteredData = [...classes];
-                renderTable();
-
-                document.querySelectorAll('.modal.show').forEach(m => {
-                    bootstrap.Modal.getInstance(m)?.hide();
-                });
+            // sync value
+            $(document).on('changed.bs.select', '.selectpicker', function () {
+                @this.set('sectionIds', $(this).val());
             });
-        });
 
-        /* init */
-        renderTable();
+            // 🔥 THIS IS THE MOST IMPORTANT FIX
+            Livewire.on('showModalChanged', () => {
+                setTimeout(() => {
+                    initPicker();
+                }, 300);
+            });
+
+        });
     </script>
 @endpush

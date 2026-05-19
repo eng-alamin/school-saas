@@ -51,7 +51,7 @@ class PurchaseListComponent extends Component
         $record->delete(); // cascades to inventory_purchase_items
         $this->confirmDelete = false;
         $this->deleteId      = null;
-        session()->flash('success', 'Purchase deleted successfully!');
+        $this->dispatch('toast', type: 'success', message: 'Data deleted successfully!');
     }
 
     public function render()

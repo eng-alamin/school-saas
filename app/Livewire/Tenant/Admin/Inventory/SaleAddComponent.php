@@ -225,7 +225,7 @@ class SaleAddComponent extends Component
             }
         });
 
-        session()->flash('success', 'Sale bill created successfully!');
+        $this->dispatch('toast', type: 'success', message: 'Data created successfully!');
         $this->resetForm();
     }
 

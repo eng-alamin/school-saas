@@ -136,7 +136,7 @@ class PurchaseAddComponent extends Component
             }
         });
 
-        session()->flash('success', 'Purchase saved successfully!');
+        $this->dispatch('toast', type: 'success', message: 'Data created successfully!');
         $this->resetForm();
     }
 

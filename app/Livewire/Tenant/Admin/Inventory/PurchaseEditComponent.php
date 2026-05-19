@@ -184,7 +184,7 @@ class PurchaseEditComponent extends Component
             }
         });
 
-        session()->flash('success', 'Purchase updated successfully!');
+        $this->dispatch('toast', type: 'success', message: 'Data updated successfully!');
     }
 
     public function render()

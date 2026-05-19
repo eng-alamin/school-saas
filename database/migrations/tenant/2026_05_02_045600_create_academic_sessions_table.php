@@ -11,10 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('academic_class_section', function (Blueprint $table) {
+        Schema::create('academic_sessions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('class_id')->constrained('academic_classes')->cascadeOnDelete();
-            $table->foreignId('section_id')->constrained('academic_sections')->cascadeOnDelete();
+            $table->string('name');
+            $table->date('start_date')->nullable();
+            $table->date('end_date')->nullable();
+            $table->boolean('is_current')->default(true);
             $table->timestamps();
         });
     }
@@ -24,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('academic_class_section');
+        Schema::dropIfExists('academic_sessions');
     }
 };

@@ -88,10 +88,10 @@ class SupplierComponent extends Component
 
         if ($this->editId) {
             InventorySupplier::findOrFail($this->editId)->update($data);
-            session()->flash('success', 'Data updated successfully!');
+            $this->dispatch('toast', type: 'success', message: 'Data updated successfully!');
         } else {
             InventorySupplier::create($data);
-            session()->flash('success', 'Data created successfully!');
+            $this->dispatch('toast', type: 'success', message: 'Data created successfully!');
         }
 
         $this->showModal = false;
@@ -132,6 +132,6 @@ class SupplierComponent extends Component
         $record->delete();
         $this->confirmDelete = false;
         $this->deleteId = null;
-        session()->flash('success', 'Data deleted successfully!');
+        $this->dispatch('toast', type: 'success', message: 'Data deleted successfully!');
     }
 }

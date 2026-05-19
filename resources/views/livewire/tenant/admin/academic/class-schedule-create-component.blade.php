@@ -12,9 +12,9 @@
             </div>
             <div class="row g-4">
                 <div class="col-md-4">
-                    <div wire:ignore class="input-group input-group-outline">
+                    <div class="input-group input-group-outline">
                         <label class="form-label">Class <span class="req">*</span></label>
-                        <select wire:model="class_id" class="form-select" id="sectionSelect">
+                        <select wire:model.live="class_id" class="form-select">
                             <option value="">Select Class</option>
                             @foreach ($classes as $c)
                                 <option value="{{ $c->id }}">{{ $c->name }}</option>
@@ -25,12 +25,12 @@
                 </div>
 
                 <div class="col-md-4">
-                    <div wire:ignore class="input-group input-group-outline">
+                    <div class="input-group input-group-outline">
                         <label class="form-label">Section <span class="req">*</span></label>
-                        <select wire:model="section_id" class="form-select" id="sectionSelect">
-                            <option value="">Select Section</option>
-                            @foreach ($sections as $s)
-                                <option value="{{ $s->id }}">{{ $s->name }}</option>
+                        <select wire:model="section_id" class="form-select">
+                            <option value="">{{ empty($availableSections) ? 'Select class first' : 'Select Section' }}</option>
+                            @foreach ($availableSections as $s)
+                                <option value="{{ $s['id'] }}">{{ $s['name'] }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -40,7 +40,7 @@
                 <div class="col-md-4">
                     <div wire:ignore class="input-group input-group-outline">
                         <label class="form-label">Day <span class="req">*</span></label>
-                        <select wire:model="day" class="form-select" id="sectionSelect">
+                        <select wire:model="day" class="form-select">
                             <option value="">Select Day</option>
                             <option value="Sunday" selected>Sunday</option>
                             <option value="Monday">Monday</option>
@@ -73,7 +73,7 @@
                         <div wire:ignore class="col-md-2">
                             <div class="input-group input-group-outline">
                                 <label class="form-label">Subject <span class="req">*</span></label>
-                                <select wire:model="data.{{ $index }}.subject" class="form-select" id="sectionSelect">
+                                <select wire:model="data.{{ $index }}.subject" class="form-select">
                                     <option value="">Select Subject</option>
                                     @foreach ($subjects as $s)
                                         <option value="{{ $s->name }}">{{ $s->name }}</option>
@@ -205,7 +205,7 @@
                         }
                     });
 
-                }, 50);
+                }, 0);
             });
         });
     </script>

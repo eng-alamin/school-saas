@@ -51,7 +51,7 @@ class SaleListComponent extends Component
         $record->delete(); // cascades to inventory_sale_items
         $this->confirmDelete = false;
         $this->deleteId      = null;
-        session()->flash('success', 'Sale deleted successfully!');
+        $this->dispatch('toast', type: 'success', message: 'Data deleted successfully!');
     }
 
     public function render()

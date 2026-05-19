@@ -4,11 +4,12 @@ namespace App\Livewire\Tenant\Admin\Academic;
 
 use Livewire\Component;
 use Livewire\WithPagination;
-use App\Models\AcademicClassAssign;
+use App\Models\AcademicTeacherAssign;
 use App\Models\AcademicClass;
-use App\Models\AcademicSubject;
+use App\Models\Employee;
+use Illuminate\Validation\Rule;
 
-class ClassAssignComponent extends Component
+class TeacherAssignComponent extends Component
 {
     use WithPagination;
 
@@ -29,7 +30,7 @@ class ClassAssignComponent extends Component
     public ?int $editId = null;
     public string $class_id = '';
     public string $section_id = '';
-    public array $subject_array = [];
+    public string $teacher_id = '';
 
     // Dependent dropdown
     public array $availableSections = [];
@@ -39,8 +40,19 @@ class ClassAssignComponent extends Component
         return [
             'class_id'        => 'required|exists:academic_classes,id',
             'section_id'      => 'required|exists:academic_sections,id',
-            'subject_array'   => 'nullable|array',
-            'subject_array.*' => 'nullable|string',
+
+            'teacher_id' => [
+                'required',
+                'exists:employees,id',
+
+                Rule::unique('academic_teacher_assigns')
+                    ->where(function ($query) {
+                        return $query
+                            ->where('class_id', $this->class_id)
+                            ->where('section_id', $this->section_id);
+                    })
+                    ->ignore($this->editId),
+            ],
         ];
     }
 
@@ -81,17 +93,16 @@ class ClassAssignComponent extends Component
         $this->resetForm();
         $this->editId = null;
         $this->showModal = true;
-        $this->dispatch('showModalChanged', selected: $this->subject_array);
     }
 
     public function openEdit(int $id): void
     {
-        $record = AcademicClassAssign::findOrFail($id);
+        $record = AcademicTeacherAssign::findOrFail($id);
 
         $this->editId        = $id;
-        $this->class_id      = (string) $record->class_id;
-        $this->section_id    = (string) $record->section_id;
-        $this->subject_array = $record->subjects ?? [];
+        $this->class_id      = $record->class_id;
+        $this->section_id    = $record->section_id;
+        $this->teacher_id    = $record->teacher_id;
 
         // Load sections via belongsToMany
         $class = AcademicClass::with('sections')->find($record->class_id);
@@ -100,7 +111,6 @@ class ClassAssignComponent extends Component
             : [];
 
         $this->showModal = true;
-        $this->dispatch('showModalChanged', selected: $this->subject_array);
     }
 
     public function save(): void
@@ -110,15 +120,15 @@ class ClassAssignComponent extends Component
         $data = [
             'class_id'   => $this->class_id,
             'section_id' => $this->section_id,
-            'subjects'   => $this->subject_array,
+            'teacher_id' => $this->teacher_id,
         ];
 
         if ($this->editId) {
-            AcademicClassAssign::findOrFail($this->editId)->update($data);
-            $this->dispatch('toast', type: 'success', message: 'Assignment updated successfully!');
+            AcademicTeacherAssign::findOrFail($this->editId)->update($data);
+            $this->dispatch('toast', type: 'success', message: 'Data updated successfully!');
         } else {
-            AcademicClassAssign::create($data);
-            $this->dispatch('toast', type: 'success', message: 'Class assigned successfully!');
+            AcademicTeacherAssign::create($data);
+            $this->dispatch('toast', type: 'success', message: 'Data created successfully!');
         }
 
         $this->showModal = false;
@@ -133,34 +143,35 @@ class ClassAssignComponent extends Component
 
     public function deleteRecord(): void
     {
-        AcademicClassAssign::findOrFail($this->deleteId)->delete();
+        AcademicTeacherAssign::findOrFail($this->deleteId)->delete();
         $this->confirmDelete = false;
         $this->deleteId      = null;
-        $this->dispatch('toast', type: 'success', message: 'Assignment deleted successfully!');
+        $this->dispatch('toast', type: 'success', message: 'Data deleted successfully!');
     }
 
     private function resetForm(): void
     {
-        $this->reset(['class_id', 'section_id', 'subject_array', 'editId', 'availableSections']);
+        $this->reset(['class_id', 'section_id', 'teacher_id', 'editId', 'availableSections']);
         $this->resetValidation();
     }
 
     public function render()
     {
-        $assigns = AcademicClassAssign::with('class', 'section')
+        $assigns = AcademicTeacherAssign::with('class', 'section')
             ->when($this->search, fn($q) => $q
-                ->whereHas('class', fn($q) => $q->where('name', 'like', "%{$this->search}%"))
+                ->whereHas('teacher', fn($q) => $q->where('name', 'like', "%{$this->search}%"))
+                ->orWhereHas('class', fn($q) => $q->where('name', 'like', "%{$this->search}%"))
                 ->orWhereHas('section', fn($q) => $q->where('name', 'like', "%{$this->search}%")))
             ->orderBy($this->sortField, $this->sortDirection)
             ->paginate($this->perPage);
 
         $classes  = AcademicClass::orderBy('id')->get();
-        $subjects = AcademicSubject::orderBy('name')->pluck('name', 'id');
+        $teachers  = Employee::where('role', 'teacher')->orderBy('id')->get();
 
-        return view('livewire.tenant.admin.academic.class-assign-component')
+        return view('livewire.tenant.admin.academic.teacher-assign-component')
             ->with('assigns', $assigns)
             ->with('classes', $classes)
-            ->with('subjects', $subjects)
+            ->with('teachers', $teachers)
             ->layout('layouts.tenant.app', [
                 'title' => "Class Assignments | School SaaS",
             ]);

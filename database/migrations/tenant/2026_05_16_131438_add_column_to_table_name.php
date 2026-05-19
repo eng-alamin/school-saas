@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('academic_years', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->boolean('is_current')->default(true);
-            $table->timestamps();
+        Schema::table('employees', function (Blueprint $table) {
+            // $table->foreignId('user_id')->constrained()->cascadeOnDelete();
         });
     }
 
@@ -24,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('academic_years');
+        Schema::table('employees', function (Blueprint $table) {
+            // $table->dropColumn('user_id');
+        });
     }
 };

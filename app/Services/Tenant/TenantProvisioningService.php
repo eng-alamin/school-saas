@@ -95,7 +95,7 @@ class TenantProvisioningService
         |--------------------------------------------------------------------------
         */
 
-        \App\Models\AcademicYear::create([
+        \App\Models\AcademicSession::create([
             'name' => '2026',
             'is_current' => true,
         ]);

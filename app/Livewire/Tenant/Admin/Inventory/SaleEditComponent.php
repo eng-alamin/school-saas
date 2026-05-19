@@ -274,7 +274,7 @@ class SaleEditComponent extends Component
         });
 
         $this->dispatch('date-updated', date: $this->date);
-        session()->flash('success', 'Sale bill updated successfully!');
+        $this->dispatch('toast', type: 'success', message: 'Data updated successfully!');
     }
 
     public function render()

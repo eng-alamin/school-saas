@@ -6,6 +6,8 @@ use Livewire\Component;
 use App\Models\Employee;
 use App\Models\Department;
 use App\Models\Designation;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 use Livewire\WithFileUploads;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rule;
@@ -82,7 +84,7 @@ class EmployeeAddComponent extends Component
             'mobile' => 'nullable|string|max:20',
             'email' => 'nullable|email',
             'photo' => 'nullable|image|max:2048',
-            'username' => 'required|unique:employees,username',
+            // 'username' => 'required|unique:employees,username',
             'password' => 'required|min:4',
         ];
     }
@@ -103,8 +105,17 @@ class EmployeeAddComponent extends Component
             // Upload photo
             $photoPath = $this->photo?->store('students', 'public');
 
+            $user = User::create([
+                'role' => $this->role,
+                'name' => $this->name,
+                // 'username' => $this->username,
+                'email' => $this->email,
+                'password' => Hash::make($this->password),
+            ]);
+
             $employee = Employee::create([
                 // Academic Details
+                'user_id' => $user->id,
                 'role' => $this->role,
                 'joining_date' => $this->joining_date,
                 'designation_id' => $this->designation_id,
@@ -122,10 +133,6 @@ class EmployeeAddComponent extends Component
                 'present_address' => $this->present_address,
                 'permanent_address' => $this->permanent_address,
                 'photo' => $photoPath,
-
-                // Login Details
-                'username' => $this->username,
-                'password' => bcrypt($this->password),
 
                 // Bank Info
                 'bank_name' => $this->bank_name,

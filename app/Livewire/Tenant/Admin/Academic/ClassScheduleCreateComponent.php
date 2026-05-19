@@ -5,7 +5,6 @@ namespace App\Livewire\Tenant\Admin\Academic;
 use Livewire\Component;
 use App\Models\AcademicClassSchedule;
 use App\Models\AcademicClass;
-use App\Models\AcademicSection;
 use App\Models\AcademicSubject;
 
 class ClassScheduleCreateComponent extends Component
@@ -19,24 +18,27 @@ class ClassScheduleCreateComponent extends Component
     public $hasSchedule = false;
     public $schedule_id;
 
-    public function render()
-    {
-        $classes = AcademicClass::all();
-        $sections = AcademicSection::all();
-        $subjects = AcademicSubject::all();
+    public array $availableSections = [];
 
-        return view('livewire.tenant.admin.academic.class-schedule-create-component')
-            ->with('classes', $classes)
-            ->with('sections', $sections)
-            ->with('subjects', $subjects)
-            ->layout('layouts.tenant.app', [
-                'title' => "Class Schedule | School SaaS",
-            ]);
+    public function updatedClassId($value): void
+    {
+        $this->section_id        = '';
+        $this->availableSections = [];
+        $this->hasSchedule       = false;
+        $this->data              = [];
+
+        if ($value) {
+            $class = AcademicClass::with('sections')->find($value);
+            if ($class) {
+                $this->availableSections = $class->sections
+                    ->map(fn($s) => ['id' => $s->id, 'name' => $s->name])
+                    ->toArray();
+            }
+        }
     }
 
     public function filter()
     {
-
         if (!$this->class_id || !$this->section_id || !$this->day) return;
 
         $schedule = AcademicClassSchedule::where('class_id', $this->class_id)
@@ -45,12 +47,12 @@ class ClassScheduleCreateComponent extends Component
             ->first();
 
         if ($schedule) {
-            $this->data = $schedule->data;
+            $this->data        = $schedule->data;
             $this->schedule_id = $schedule->id;
             $this->hasSchedule = true;
         } else {
             $this->schedule_id = null;
-            $this->data = [
+            $this->data        = [
                 [
                     'subject'    => '',
                     'teacher'    => '',
@@ -61,16 +63,15 @@ class ClassScheduleCreateComponent extends Component
             ];
             $this->hasSchedule = true;
         }
-
     }
 
     public function addRow()
     {
         $this->data[] = [
-            'subject' => '',
-            'teacher' => '',
+            'subject'    => '',
+            'teacher'    => '',
             'start_time' => '09:00',
-            'end_time' => '10:00',
+            'end_time'   => '10:00',
             'class_room' => '',
         ];
 
@@ -83,18 +84,22 @@ class ClassScheduleCreateComponent extends Component
         $this->data = array_values($this->data);
     }
 
+    public function resetForm()
+    {
+        $this->reset(['class_id', 'section_id', 'day', 'data', 'hasSchedule', 'schedule_id', 'availableSections']);
+    }
+
     public function save()
     {
         $this->validate([
-            'class_id' => 'required|exists:academic_classes,id',
-            'section_id' => 'required|exists:academic_sections,id',
-            'day' => 'required|string|max:20',
-
-            'data.*.subject' => 'required',
-            'data.*.teacher' => 'required',
-            'data.*.start_time' => 'required|date_format:H:i',
-            'data.*.end_time' => 'required|date_format:H:i|after:data.*.start_time',
-            'data.*.class_room' => 'nullable|string|max:100',
+            'class_id'            => 'required|exists:academic_classes,id',
+            'section_id'          => 'required|exists:academic_sections,id',
+            'day'                 => 'required|string|max:20',
+            'data.*.subject'      => 'required',
+            'data.*.teacher'      => 'required',
+            'data.*.start_time'   => 'required|date_format:H:i',
+            'data.*.end_time'     => 'required|date_format:H:i|after:data.*.start_time',
+            'data.*.class_room'   => 'nullable|string|max:100',
         ]);
 
         try {
@@ -108,11 +113,24 @@ class ClassScheduleCreateComponent extends Component
                     'data' => $this->data,
                 ]
             );
-            
+
             $this->dispatch('toast', type: 'success', message: 'Class schedule saved successfully!');
 
         } catch (\Exception $e) {
             $this->dispatch('toast', type: 'error', message: 'Creation failed: ' . $e->getMessage());
         }
+    }
+
+    public function render()
+    {
+        $classes  = AcademicClass::orderBy('id')->get();
+        $subjects = AcademicSubject::orderBy('name')->get();
+
+        return view('livewire.tenant.admin.academic.class-schedule-create-component')
+            ->with('classes', $classes)
+            ->with('subjects', $subjects)
+            ->layout('layouts.tenant.app', [
+                'title' => "Class Schedule | School SaaS",
+            ]);
     }
 }

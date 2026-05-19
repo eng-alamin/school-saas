@@ -20,20 +20,24 @@ class ClassScheduleListComponent extends Component
     public $days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 
-    public function render()
+    public array $availableSections = [];
+
+    public function updatedClassId($value): void
     {
-        $classes = AcademicClass::all();
-        $sections = AcademicSection::all();
+        $this->section_id        = '';
+        $this->availableSections = [];
+        $this->hasSchedule       = false;
+        $this->data              = [];
 
-        return view('livewire.tenant.admin.academic.class-schedule-list-component')
-            ->with('classes', $classes)
-            ->with('sections', $sections)
-            ->with('days', $this->days)
-            ->layout('layouts.tenant.app', [
-                'title' => "Class Schedule | School SaaS",
-            ]);
+        if ($value) {
+            $class = AcademicClass::with('sections')->find($value);
+            if ($class) {
+                $this->availableSections = $class->sections
+                    ->map(fn($s) => ['id' => $s->id, 'name' => $s->name])
+                    ->toArray();
+            }
+        }
     }
-
 
     public function filter()
     {
@@ -65,6 +69,19 @@ class ClassScheduleListComponent extends Component
         $this->hasSchedule = true;
     }
 
+    public function render()
+    {
+        $classes  = AcademicClass::orderBy('id')->get();
+        $sections = AcademicSection::orderBy('name')->get();
+
+        return view('livewire.tenant.admin.academic.class-schedule-list-component')
+            ->with('classes', $classes)
+            ->with('sections', $sections)
+            ->with('days', $this->days)
+            ->layout('layouts.tenant.app', [
+                'title' => "Class Schedule | School SaaS",
+            ]);
+    }
 
 
 }

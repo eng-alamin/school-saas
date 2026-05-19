@@ -5,6 +5,10 @@ namespace App\Livewire\Tenant\Admin;
 use Livewire\Component;
 use App\Models\Student;
 use App\Models\Guardian;
+use App\Models\AcademicSession;
+use App\Models\AcademicClass;
+use App\Models\AcademicSection;
+use App\Models\AcademicCategory;
 use Livewire\WithFileUploads;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rule;
@@ -13,7 +17,7 @@ class AdmissionCreateComponent extends Component
 {
     use WithFileUploads;
 
-    public $academic_year;
+    public $session_id;
     public $register_no;
     public $roll_no;
     public $admission_date;
@@ -21,7 +25,7 @@ class AdmissionCreateComponent extends Component
     public $section_id;
     public $category_id;
 
-    public $full_name;
+    public $name;
     public $gender;
     public $blood_group;
     public $dob;
@@ -59,9 +63,17 @@ class AdmissionCreateComponent extends Component
 
     public function render()
     {
+        $sessions = AcademicSession::orderBy('name')->get();
+        $classes = AcademicClass::orderBy('id')->get();
+        $sections = AcademicSection::orderBy('name')->get();
+        $categories = AcademicCategory::orderBy('name')->get();
         $guardians = Guardian::all();
 
         return view('livewire.tenant.admin.admission-create-component')
+        ->with('sessions', $sessions)
+        ->with('classes', $classes)
+        ->with('sections', $sections)
+        ->with('categories', $categories)
         ->with('guardians', $guardians)
         ->layout('layouts.tenant.app', [
             'title' => "Create Admission | Monarchy School",
@@ -81,9 +93,9 @@ class AdmissionCreateComponent extends Component
     public function rules()
     {
         return [
-            'academic_year' => 'required',
+            'session_id' => 'required',
             'register_no' => 'required|unique:students,register_no',
-            'full_name' => 'required',
+            'name' => 'required',
             'username' => 'required|unique:students,username',
             'password' => 'required|confirmed|min:4',
 
@@ -115,7 +127,7 @@ class AdmissionCreateComponent extends Component
             // $photoPath = $this->photo?->store('students', 'public');
 
             $student = Student::create([
-                'academic_year' => $this->academic_year,
+                'session_id' => $this->session_id,
                 'register_no' => $this->register_no,
                 'roll_no' => $this->roll_no,
                 'admission_date' => $this->admission_date,
@@ -123,7 +135,7 @@ class AdmissionCreateComponent extends Component
                 'section_id' => $this->section_id,
                 'category_id' => $this->category_id,
 
-                'full_name' => $this->full_name,
+                'name' => $this->name,
                 'gender' => $this->gender,
                 'blood_group' => $this->blood_group,
                 'dob' => $this->dob,

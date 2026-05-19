@@ -15,13 +15,13 @@
             <div class="col-md-3">
                 <div class="input-group input-group-outline" wire:ignore>
                     <label class="form-label">Academic Year <span class="req">*</span></label>
-                    <select wire:model="academic_year" class="form-select">
-                        <option value="2026-2027">2026-2027</option>
-                        <option value="2025-2026">2025-2026</option>
-                        <option value="2024-2025">2024-2025</option>
+                    <select wire:model="session_id" class="form-select">
+                        @foreach($sessions as $session)
+                            <option value="{{ $session->id }}">{{ $session->name }}</option>
+                        @endforeach
                     </select>
                 </div>
-                @error('academic_year') <span class="text-danger">{{ $message }}</span> @enderror
+                @error('session_id') <span class="text-danger">{{ $message }}</span> @enderror
             </div>
             <div class="col-md-3">
                 <div class="input-group input-group-outline">
@@ -48,17 +48,10 @@
                 <div class="input-group input-group-outline" wire:ignore>
                     <label class="form-label">Class <span class="req">*</span></label>
                     <select wire:model="class_id" class="form-select" id="classSelect">
-                        <option value="">Select</option>
-                        <option value="1">Class 1</option>
-                        <option value="2">Class 2</option>
-                        <option value="3">Class 3</option>
-                        <option value="4">Class 4</option>
-                        <option value="5">Class 5</option>
-                        <option value="6">Class 6</option>
-                        <option value="7">Class 7</option>
-                        <option value="8">Class 8</option>
-                        <option value="9">Class 9</option>
-                        <option value="10">Class 10</option>
+                        <option value="">Select Class</option>
+                        @foreach($classes as $class)
+                            <option value="{{ $class->id }}">{{ $class->name }}</option>
+                        @endforeach
                     </select>
                      @error('class_id') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
@@ -67,13 +60,10 @@
                 <div class="input-group input-group-outline" wire:ignore>
                     <label class="form-label">Section <span class="req">*</span></label>
                     <select wire:model="section_id" class="form-select" id="sectionSelect">
-                        <option value="">Select Class First</option>
-                        <option value="1">A</option>
-                        <option value="2">B</option>
-                        <option value="3">C</option>
-                        <option value="4">D</option>
-                        <option value="5">E</option>
-                        <option value="6">F</option>
+                        <option value="">Select Section</option>
+                        @foreach($sections as $section)
+                            <option value="{{ $section->id }}">{{ $section->name }}</option>
+                        @endforeach
                     </select>
                     @error('section_id') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
@@ -82,11 +72,10 @@
                 <div class="input-group input-group-outline" wire:ignore>
                     <label class="form-label">Category <span class="req">*</span></label>
                     <select wire:model="category_id" class="form-select">
-                        <option value="">Select</option>
-                        <option value="1">General</option>
-                        <option value="2">OBC</option>
-                        <option value="3">SC</option>
-                        <option value="4">ST</option>
+                        <option value="">Select Category</option>
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                        @endforeach
                     </select>
                     @error('category_id') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
@@ -103,8 +92,8 @@
             <div class="col-md-6">
                     <div class="input-group input-group-outline">
                     <label class="form-label">Full Name <span class="req">*</span></label>
-                    <input type="text" wire:model="full_name" class="form-control" placeholder=" " onfocus="focused(this)" onfocusout="defocused(this)">
-                    @error('full_name') <span class="text-danger">{{ $message }}</span> @enderror
+                    <input type="text" wire:model="name" class="form-control" placeholder=" " onfocus="focused(this)" onfocusout="defocused(this)">
+                    @error('name') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
             </div>
             <div class="col-md-6">

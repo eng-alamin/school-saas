@@ -31,19 +31,22 @@ Route::middleware([
         Route::get('/login', \App\Livewire\Tenant\Auth\LoginComponent::class)->name('tenant.login');
 
         Route::get('/dashboard', \App\Livewire\Tenant\Admin\DashboardComponent::class)->name('tenant.dashboard');
-        Route::get('/student/create', \App\Livewire\Tenant\Admin\AdmissionCreateComponent::class)->name('tenant.student.create');
+        Route::get('/student/create', \App\Livewire\Tenant\Admin\AdmissionCreateComponent::class)->name('admin.student.create');
         Route::get('/student/list', \App\Livewire\Tenant\Admin\StudentListComponent::class)->name('tenant.student.list');
+        Route::get('/student/{id}/edit', \App\Livewire\Tenant\Admin\AdmissionCreateComponent::class)->name('admin.student.edit');
         Route::get('/student/{id}/overview', \App\Livewire\Tenant\Admin\StudentOverviewComponent::class)->name('admin.student.overview');
         // Academic
-        Route::get('/academic/classes', \App\Livewire\Tenant\Admin\Academic\ClassComponent::class)->name('tenant.academic.classes');
         Route::get('/academic/categories', \App\Livewire\Tenant\Admin\Academic\CategoryComponent::class)->name('tenant.academic.categories');
+        Route::get('/academic/classes', \App\Livewire\Tenant\Admin\Academic\ClassComponent::class)->name('tenant.academic.classes');
         Route::get('/academic/sections', \App\Livewire\Tenant\Admin\Academic\SectionComponent::class)->name('tenant.academic.sections');
         Route::get('/academic/subjects', \App\Livewire\Tenant\Admin\Academic\SubjectComponent::class)->name('tenant.academic.subjects');
         Route::get('/academic/class-assign', \App\Livewire\Tenant\Admin\Academic\ClassAssignComponent::class)->name('tenant.academic.class-assign');
+        Route::get('/academic/teacher-assign', \App\Livewire\Tenant\Admin\Academic\TeacherAssignComponent::class)->name('tenant.academic.teacher-assign');
         Route::get('/academic/class-schedule/create', \App\Livewire\Tenant\Admin\Academic\ClassScheduleCreateComponent::class)->name('tenant.academic.class-schedule.create');
         Route::get('/academic/class-schedule/list', \App\Livewire\Tenant\Admin\Academic\ClassScheduleListComponent::class)->name('tenant.academic.class-schedule.list');
-        Route::get('/academic/class-schedule/view/{id}', \App\Livewire\Tenant\Admin\Academic\ClassScheduleViewComponent::class)->name('tenant.academic.class-schedule.view');
-        
+        Route::get('/academic/teacher-schedule', \App\Livewire\Tenant\Admin\Academic\TeacherScheduleComponent::class)->name('tenant.academic.teacher-schedule');
+        Route::get('/academic/student-promotion', \App\Livewire\Tenant\Admin\Academic\StudentPromotionComponent::class)->name('tenant.academic.student-promotion');
+
         Route::get('/employee/departments', \App\Livewire\Tenant\Admin\Employee\DepartmentComponent::class)->name('admin.employee.departments');
         Route::get('/employee/designations', \App\Livewire\Tenant\Admin\Employee\DesignationComponent::class)->name('admin.employee.designations');
         Route::get('/employee/list', \App\Livewire\Tenant\Admin\Employee\EmployeeListComponent::class)->name('admin.employee.list');
@@ -132,5 +135,7 @@ Route::middleware([
         Route::get('/inventory/sale/list', \App\Livewire\Tenant\Admin\Inventory\SaleListComponent::class)->name('admin.inventory.sale.list');
         Route::get('/inventory/sale/add', \App\Livewire\Tenant\Admin\Inventory\SaleAddComponent::class)->name('admin.inventory.sale.add');
         Route::get('/inventory/sale/{id}/edit', \App\Livewire\Tenant\Admin\Inventory\SaleEditComponent::class)->name('admin.inventory.sale.edit');
+        
+        Route::get('setting/school', \App\Livewire\Tenant\Admin\Setting\SchoolComponent::class)->name('admin.setting.school');
     });
 });

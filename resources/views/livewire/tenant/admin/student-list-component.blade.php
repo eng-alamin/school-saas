@@ -1,498 +1,322 @@
-<div class="mat-card" style="padding-top:28px">
+<div>
 
-      <!-- floating header -->
-      <div class="mat-card-header header-pink-gradient">
-        <h5 id="cardHeaderTitleAllStudents">All Students</h5>
-        <p id="cardHeaderSubtitle">A lightweight, extendable, dependency-free javascript HTML table plugin.</p>
-      </div>
+    <div class="card">
 
-      <div class="row g-4 p-5">
-        <div class="col-md-6">
-          <div class="input-group input-group-outline">
-            <label class="form-label">Class</label>
-            <select class="form-select">
-              <option value="">Select</option>
-              <option value="One">One</option>
-              <option value="Two">Two</option>
-              <option value="Three">Three</option>
-              <option value="Four">Four</option>
-            </select>
-          </div>
+        <div class="mat-card-header header-pink-gradient">
+            <h5 id="cardHeaderTitleAllStudents">All Students</h5>
+            <p id="cardHeaderSubtitle">Manage students, filter by class and section.</p>
         </div>
-        <div class="col-md-6">
-          <div class="input-group input-group-outline">
-            <label class="form-label">Section</label>
-            <select class="form-select">
-              <option value="">Select</option>
-              <option value="A">A</option>
-              <option value="B">B</option>
-              <option value="C">C</option>
-              <option value="D">D</option>
-            </select>
-          </div>
-        </div>
-        <div class="col-md-12 text-center">
-            <button class="btn-pink w-100 d-flex justify-content-center align-items-center" type="button" onclick="handleSave(this)">
-                Filter
-            </button>
-        </div>
-      </div>
 
-      <!-- Table Card -->
-      <div class="table-card">
-        <!-- toolbar -->
-        <div class="card-toolbar">
-          <div class="card-toolbar-title">
-            <!-- search in table -->
-            <div style="position:relative;display:inline-flex;align-items:center">
-              <span class="material-icons-round" style="position:absolute;left:10px;font-size:17px;color:var(--muted);pointer-events:none">search</span>
-              <input type="text" id="tableSearch" placeholder="Search pages…" style="border:1px solid rgba(0,0,0,.1);border-radius:8px;padding:7px 12px 7px 32px;font-size:.78rem;font-family:inherit;color:var(--dark);outline:none;background:#f8f9fa;width:220px"/>
+        {{-- ===== FILTER ===== --}}
+        <div class="px-4 pt-4 pb-2">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="input-group input-group-outline">
+                        <label class="form-label">Class</label>
+                        <select wire:model.live="filter_class_id" class="form-select">
+                            <option value="">Select</option>
+                            @foreach($classes as $c)
+                                <option value="{{ $c->id }}">{{ $c->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @error('filter_class_id') <span class="text-danger small">{{ $message }}</span> @enderror
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group input-group-outline">
+                        <label class="form-label">Section</label>
+                        <select wire:model.live="filter_section_id" class="form-select" @disabled(empty($availableSections))>
+                            <option value="">{{ empty($availableSections) ? 'Select class first' : 'Select' }}</option>
+                            @foreach($availableSections as $s)
+                                <option value="{{ $s['id'] }}">{{ $s['name'] }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @error('filter_section_id') <span class="text-danger small">{{ $message }}</span> @enderror
+                </div>
+                <div class="col-md-12 text-center">
+                    <button wire:click="filter" class="btn-pink w-100 d-flex justify-content-center align-items-center" type="button">
+                        <span wire:loading wire:target="filter" class="spinner-border spinner-border-sm me-2"></span>
+                        Filter
+                    </button>
+                </div>
             </div>
-          </div>
-
-          <!-- buttons right -->
-          <button class="btn-outline" data-bs-toggle="modal" data-bs-target="#importModal">
-            <span class="material-icons-round" style="font-size:16px">upload</span> <span id="importBtnEl">Import</span>
-          </button>
-          <button class="btn-outline" id="exportBtn">
-            <span class="material-icons-round" style="font-size:16px">download</span> <span id="exportBtnEl">Export CSV</span>
-          </button>
-          <button class="btn-outline" id="printBtn">
-            <span class="material-icons-round" style="font-size:16px">print</span> <span id="printBtnEl">Print</span>
-          </button>
-
         </div>
 
-        <!-- table -->
-        <div class="table-responsive">
-          <table class="mat-table" id="productsTable">
-            <thead>
-              <tr>
-                <th onclick="sortTable(0)" id="th-name"><span id="th-name-lbl">Name</span> <span class="sort-icon"></span></th>
-                <th onclick="sortTable(1)" id="th-class"><span id="th-class-lbl">Class</span> <span class="sort-icon"></span></th>
-                <th onclick="sortTable(2)" id="th-section"><span id="th-section-lbl">Section</span> <span class="sort-icon"></span></th>
-                <th onclick="sortTable(3)" id="th-gender"><span id="th-gender-lbl">Gender</span> <span class="sort-icon"></span></th>
-                <th onclick="sortTable(4)" id="th-register-no"><span id="th-register-lbl">Register No</span> <span class="sort-icon"></span></th>
-                <th onclick="sortTable(5)" id="th-roll-no"><span id="th-roll-lbl">Roll No</span> <span class="sort-icon"></span></th>
-                <th onclick="sortTable(6)" id="th-guardian-name"><span id="th-guardian-name-lbl">Guardian Name</span> <span class="sort-icon"></span></th>
-                <th id="th-actions"><span id="th-actions-lbl">Action</span></th>
-              </tr>
-            </thead>
-            <tbody id="tableBody">
-              <!-- rows injected by JS -->
-            </tbody>
-          </table>
-        </div>
+        @if($hasFilter)
+            {{-- ===== TOOLBAR ===== --}}
+            <div class="card-header border-0">
+                <div class="card-toolbar">
+                    <div class="card-toolbar-title">
+                        <div style="position:relative;display:inline-flex;align-items:center">
+                            <span class="material-icons-round" style="position:absolute;left:10px;font-size:17px;color:var(--muted);pointer-events:none">search</span>
+                            <input type="text" wire:model.live.debounce.300ms="search" placeholder="Search name, reg no..." style="border:1px solid rgba(0,0,0,.1);border-radius:8px;padding:7px 12px 7px 32px;font-size:.78rem;font-family:inherit;color:var(--dark);outline:none;background:#f8f9fa;width:220px"/>
+                        </div>
+                    </div>
 
-        <!-- pagination -->
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px 18px;flex-wrap:wrap;gap:10px">
-          <span style="font-size:.75rem;color:var(--muted)" id="pageInfo"></span>
-          <div style="display:flex;gap:4px" id="paginationBtns"></div>
-        </div>
-      </div>
+                    @if($students->total() > 10)
+                        <div class="col-md-2">
+                            <select class="form-select form-select-sm" wire:model.live="perPage">
+                                <option value="10">10 / page</option>
+                                <option value="25">25 / page</option>
+                                <option value="50">50 / page</option>
+                            </select>
+                        </div>
+                    @endif
+
+                    {{-- Import --}}
+                    <button class="btn-outline" data-bs-toggle="modal" data-bs-target="#importModal">
+                        <span class="material-icons-round" style="font-size:16px">upload</span> Import
+                    </button>
+
+                    {{-- Export CSV --}}
+                    {{-- BUG FIX: wire:click দিয়ে JS call করা হলো যাতে element সবসময় present থাকে --}}
+                    <button class="btn-outline" onclick="exportStudentCSV()">
+                        <span class="material-icons-round" style="font-size:16px">download</span> Export CSV
+                    </button>
+
+                    {{-- Print --}}
+                    <button class="btn-outline" onclick="printTable()">
+                        <span class="material-icons-round" style="font-size:16px">print</span> Print
+                    </button>
+
+                    <a href="{{ route('admin.student.create', ['tenant' => tenant('id')]) }}" class="btn-outline bg-dark text-white">
+                        <span class="material-icons-round">add</span> Add Student
+                    </a>
+                </div>
+            </div>
+
+            {{-- ===== TABLE ===== --}}
+            <div class="card-body pt-0" id="printArea">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0" id="studentTable">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Class</th>
+                                <th>Section</th>
+                                <th>Gender</th>
+                                <th>Register No</th>
+                                <th>Roll No</th>
+                                <th>Guardian</th>
+                                <th class="no-print">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($students as $student)
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <img src="{{ $student->photo ? asset('storage/'.$student->photo) : global_asset('assets/img/default-user.jpg') }}"
+                                            style="width:36px;height:36px;border-radius:8px;object-fit:cover;" alt="">
+                                        <span class="fw-500">{{ $student->name }}</span>
+                                    </div>
+                                </td>
+                                <td>{{ $student->class?->name ?? '—' }}</td>
+                                <td>{{ $student->section?->name ?? '—' }}</td>
+                                <td>{{ $student->gender ?? '—' }}</td>
+                                <td>{{ $student->register_no }}</td>
+                                <td>{{ $student->roll_no ?? '—' }}</td>
+                                <td>{{ $student->guardians->first()?->name ?? '—' }}</td>
+                                <td class="no-print">
+                                    <div class="d-flex gap-1">
+                                        <a href="{{ route('admin.student.overview', ['tenant' => tenant('id'), 'id' => $student->id]) }}"
+                                            class="act-btn view" title="View">
+                                            <span class="material-icons-round">visibility</span>
+                                        </a>
+                                        <a href="{{ route('admin.student.edit', ['tenant' => tenant('id'), 'id' => $student->id]) }}"
+                                            class="act-btn edit" title="Edit">
+                                            <span class="material-icons-round">drive_file_rename_outline</span>
+                                        </a>
+                                        <button class="act-btn delete" title="Delete"
+                                            wire:click="confirmDeleteRecord({{ $student->id }})">
+                                            <span class="material-icons-round">delete</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="8" class="text-center py-5 text-muted">
+                                    <i class="bi bi-inbox display-5 d-block mb-2 opacity-25"></i>
+                                    No students found.
+                                </td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card-footer border-0 bg-white d-flex align-items-center justify-content-between flex-wrap gap-2 py-2 px-3">
+                <small class="text-muted">Showing {{ $students->firstItem() ?? 0 }}–{{ $students->lastItem() ?? 0 }} of {{ $students->total() }}</small>
+                {{ $students->links('vendor.pagination.custom') }}
+            </div>
+        @endif
 
     </div>
 
-    @push('scripts')
-        <!-- ═══════ IMPORT MODAL ═══════ -->
-        <div class="modal fade" id="importModal" tabindex="-1">
+    {{-- ===== IMPORT MODAL ===== --}}
+    <div class="modal fade" id="importModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Import CSV</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body p-4">
-                <div class="drop-zone" onclick="document.getElementById('csvFile').click()">
-                <span class="material-icons-round">file_upload</span>
-                <p><strong>You can browse your computer for a file.</strong></p>
-                <p style="margin-top:4px">Drag &amp; drop or <span style="color:var(--pink);font-weight:600">click to browse</span></p>
-                </div>
-                <input type="file" id="csvFile" accept=".csv" style="display:none"/>
-                <div class="form-check mt-3">
-                <input class="form-check-input" type="checkbox" id="termsCheck"/>
-                <label class="form-check-label" for="termsCheck" style="font-size:.8rem">
-                    I accept the terms and conditions
-                </label>
-                </div>
-            </div>
-            <div class="modal-footer gap-2">
-                <button class="btn-outline" data-bs-dismiss="modal">Close</button>
-                <button class="btn-pink">
-                <span class="material-icons-round" style="font-size:16px">upload</span> Upload
-                </button>
-            </div>
-            </div>
-        </div>
-        </div>
-
-        <!-- ═══════ NEW PRODUCT MODAL ═══════ -->
-        <div class="modal fade" id="newPageModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-            <div class="modal-header border-0">
-                <h5 class="modal-title">Add New Product</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body p-4" style="display:flex;flex-direction:column;gap:14px">
-
-                <div>
-                <div class="form-control border dropzone" id="myDropzone"></div>
-                </div>
-
-                <div>
-                <label style="font-size:.75rem;font-weight:600;color:var(--dark);display:block;margin-bottom:4px">Product Name</label>
-                <input type="text" placeholder="e.g. Air Max 2024" style="width:100%;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:8px 12px;font-size:.82rem;font-family:inherit;outline:none"/>
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-                <div>
-                    <label style="font-size:.75rem;font-weight:600;color:var(--dark);display:block;margin-bottom:4px">Category</label>
-                    <select style="width:100%;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:8px 12px;font-size:.82rem;font-family:inherit;outline:none;background:#fff">
-                    <option>Clothing</option><option>Electronics</option><option>Furniture</option>
-                    <option>Shoes</option><option>Designer</option>
-                    </select>
-                </div>
-                <div>
-                    <label style="font-size:.75rem;font-weight:600;color:var(--dark);display:block;margin-bottom:4px">Price ($)</label>
-                    <input type="number" placeholder="0.00" style="width:100%;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:8px 12px;font-size:.82rem;font-family:inherit;outline:none"/>
-                </div>
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-                <div>
-                    <label style="font-size:.75rem;font-weight:600;color:var(--dark);display:block;margin-bottom:4px">SKU</label>
-                    <input type="text" placeholder="e.g. 123456" style="width:100%;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:8px 12px;font-size:.82rem;font-family:inherit;outline:none"/>
-                </div>
-                <div>
-                    <label style="font-size:.75rem;font-weight:600;color:var(--dark);display:block;margin-bottom:4px">Quantity</label>
-                    <input type="number" placeholder="0" style="width:100%;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:8px 12px;font-size:.82rem;font-family:inherit;outline:none"/>
-                </div>
-                </div>
-            </div>
-            <div class="modal-footer border-0 gap-2">
-                <button class="btn-outline" data-bs-dismiss="modal">Cancel</button>
-                <button class="btn-pink"><span class="material-icons-round" style="font-size:16px">add</span> Add Product</button>
-            </div>
-            </div>
-        </div>
-        </div>
-
-        <!-- ═══════ VIEW MODAL ═══════ -->
-        <div class="modal fade" id="viewStudentModal" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                
                 <div class="modal-header border-0">
-                    <h5 class="modal-title">Student Details</h5>
+                    <h5 class="modal-title">Import CSV</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
+                <div class="modal-body p-4">
+                    <div style="border:2px dashed var(--border);border-radius:12px;padding:32px;text-align:center;cursor:pointer"
+                        onclick="document.getElementById('csvFile').click()">
+                        <span class="material-icons-round" style="font-size:2.5rem;color:var(--muted)">file_upload</span>
+                        <p class="mt-2 mb-1" style="font-weight:600;font-size:.85rem">Click to browse or drag & drop</p>
+                        <p style="font-size:.75rem;color:var(--muted)">CSV files only</p>
+                    </div>
+                    <input type="file" id="csvFile" accept=".csv" style="display:none"/>
+                    <div class="form-check mt-3">
+                        <input class="form-check-input" type="checkbox" id="termsCheck">
+                        <label class="form-check-label" for="termsCheck" style="font-size:.8rem">
+                            I accept the terms and conditions
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 gap-2">
+                    <button class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                    <button class="btn bg-dark text-white">
+                        <span class="material-icons-round" style="font-size:16px">upload</span> Upload
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                <div class="modal-body">
-
-                    <div style="display:flex;gap:20px;flex-wrap:wrap">
-                    <div style="width:100px;height:100px;background:var(--surface-2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:48px;border:1px solid var(--border);flex-shrink:0">
-                        <div style="text-align:center;margin-bottom:12px">
-                            <img id="viewPhoto" src="" style="width:80px;height:80px;border-radius:10px"/>
+    {{-- ===== DELETE CONFIRM ===== --}}
+    @if($confirmDelete)
+        <div class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,.5);">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-body text-center py-4">
+                        <div style="width:56px;height:56px;border-radius:50%;background:#fee2e2;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+                            <i class="bi bi-exclamation-triangle text-danger" style="font-size:1.5rem;"></i>
                         </div>
+                        <h6 class="fw-700">Delete Student?</h6>
+                        <p class="text-muted small">This action cannot be undone.</p>
                     </div>
-                    <div style="flex:1;min-width:200px">
-                        <h5 style="font-weight:700;margin-bottom:4px"> <span id="viewFullName"></span></h5>
-                        <div style="font-size:12px;color:#9aa0be;font-family:'JetBrains Mono',monospace;margin-bottom:12px"><span id="viewGender"></span></div>
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-                            <div><div style="font-size:11px;color:#9aa0be;font-weight:700;text-transform:uppercase">Class</div><div style="font-weight:600;margin-top:2px"><span id="viewClass"></span></div></div>
-                            <div><div style="font-size:11px;color:#9aa0be;font-weight:700;text-transform:uppercase">Section</div><div style="font-weight:700;font-size:18px;color:var(--primary);margin-top:2px"><span id="viewSection"></span></div></div>
-                            <div><div style="font-size:11px;color:#9aa0be;font-weight:700;text-transform:uppercase">Category</div><div style="font-weight:600;margin-top:2px"><span id="viewCategory"></span></div></div>
-                            <div><div style="font-size:11px;color:#9aa0be;font-weight:700;text-transform:uppercase">Registration No.</div><div style="margin-top:4px"><span id="viewRegisterNo"></span></div></div>
-                            <div><div style="font-size:11px;color:#9aa0be;font-weight:700;text-transform:uppercase">Roll No.</div><div style="margin-top:4px"><span id="viewRollNo"></span></div></div>
-                            <div><div style="font-size:11px;color:#9aa0be;font-weight:700;text-transform:uppercase">Guardian Name</div><div style="margin-top:4px"><span id="viewGuardianName "></span></div></div>
-                        </div>
-                    </div>
+                    <div class="modal-footer justify-content-center border-0 pt-0">
+                        <button class="btn btn-light btn-sm" wire:click="$set('confirmDelete', false)">Cancel</button>
+                        <button class="btn btn-danger btn-sm" wire:click="deleteRecord">
+                            <span wire:loading wire:target="deleteRecord" class="spinner-border spinner-border-sm me-1"></span>
+                            Delete
+                        </button>
                     </div>
                 </div>
-
-                <div class="modal-footer border-0">
-                    <button class="btn-outline" data-bs-dismiss="modal">Close</button>
-                </div>
-
-                </div>
             </div>
         </div>
+    @endif
 
-        <!-- EDIT PRODUCT MODAL -->
-        <div class="modal fade" id="editProductModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
+</div>
 
-            <div class="modal-header border-0">
-                <h5 class="modal-title">Edit Product</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
+@push('styles')
+<style>
+    :root { --primary: rgba(33,37,41); --primary-light: rgba(239,84,84,.12); }
+    .card { border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
+    .card-header { background: #fff; border-bottom: 1px solid var(--border); border-radius: 12px 12px 0 0 !important; padding: 16px 20px; }
+    .form-label { font-size: .8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
+    .form-control, .form-select { border-radius: 8px; border: 1px solid var(--border); font-size: .875rem; padding: .45rem .75rem; }
+    .table th { font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); }
+    .table td { vertical-align: middle; font-size: .875rem; }
 
-            <div class="modal-body" style="display:flex;flex-direction:column;gap:14px">
+    @@media print {
+        .no-print, .card-header, .card-footer { display: none !important; }
+        .card { box-shadow: none; border: none; }
+    }
+</style>
+@endpush
 
-                <input type="hidden" id="editId">
-
-                <div>
-                <label>Product Name</label>
-                <input type="text" id="editName" class="form-control">
-                </div>
-
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-                <div>
-                    <label>Category</label>
-                    <select id="editCategory" class="form-control">
-                    <option>Clothing</option>
-                    <option>Electronics</option>
-                    <option>Furniture</option>
-                    <option>Shoes</option>
-                    <option>Designer</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label>Price</label>
-                    <input type="number" id="editPrice" class="form-control">
-                </div>
-                </div>
-
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-                <div>
-                    <label>SKU</label>
-                    <input type="text" id="editSku" class="form-control">
-                </div>
-
-                <div>
-                    <label>Quantity</label>
-                    <input type="number" id="editQty" class="form-control">
-                </div>
-                </div>
-
-                <div>
-                <label>Status</label>
-                <select id="editStatus" class="form-control">
-                    <option>In Stock</option>
-                    <option>Out of Stock</option>
-                </select>
-                </div>
-
-            </div>
-
-            <div class="modal-footer border-0">
-                <button class="btn-outline" data-bs-dismiss="modal">Cancel</button>
-                <button class="btn-pink" onclick="updateProduct()">Save Changes</button>
-            </div>
-
-            </div>
-        </div>
-        </div>
-
-        <!-- ═══════ DELETE CONFIRM MODAL ═══════ -->
-        <div class="modal fade" id="deleteModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-sm">
-            <div class="modal-content text-center p-3">
-            <div style="width:52px;height:52px;border-radius:50%;background:var(--pink-light);display:flex;align-items:center;justify-content:center;margin:12px auto">
-                <span class="material-icons-round" style="color:var(--pink);font-size:26px">delete_outline</span>
-            </div>
-            <h6 style="font-weight:700;margin:8px 0 4px">Delete this product?</h6>
-            <p style="font-size:.78rem;color:var(--muted);margin-bottom:16px" id="deleteName">This action cannot be undone.</p>
-            <div style="display:flex;gap:8px;justify-content:center">
-                <button class="btn-outline" data-bs-dismiss="modal">Cancel</button>
-                <button class="btn-pink" onclick="confirmDelete()">Delete</button>
-            </div>
-            </div>
-        </div>
-        </div>
-        <!-- ═══════ Toast Container ═══════ -->
-        <div class="toast-container" id="toastContainer"></div>
-
-        <!-- Bootstrap JS -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-        <!-- Dropzone JS -->
-        <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
-        <!-- Theme JS -->
-        <script src="theme.js"></script>
-
-
-    <script>
-        // DATA
-        const students = @json($students);
-        const perPage = 10;
-        let currentPage = 1;
-        let sortCol = -1, sortAsc = true;
-        let filteredData = [...students];
-        let deleteTargetId = null;
-
-        function renderTable() {
-            const start = (currentPage - 1) * perPage;
-            const rows  = filteredData.slice(start, start + perPage);
-            const tbody = document.getElementById('tableBody');
-
-            tbody.innerHTML = rows.map(p => `
-                <tr id="row-${p.id}">
-                <td class="prod-td" data-label="">
-                <div class="prod-cell">
-                    <img src="${p.photo ? p.photo : '/assets/img/default-user.jpg'}" class="prod-thumb" alt="${p.full_name}"/>
-                    <span class="prod-name">${p.full_name}</span>
-                </div>
-                </td>
-                <td data-label="Class"><span class="">${p.class_id}</span></td>
-                <td data-label="Section"><span class="">${p.section_id}</span></td>
-                <td data-label="Gender"><span class="">${p.gender}</span></td>
-                <td data-label="Register No"><span class="">${p.register_no}</span></td>
-                <td data-label="Roll No"><span class="">${p.roll_no}</span></td>
-                <td data-label="Guardian Name"><span class="">${p.guardians?.[0]?.name ?? 'No Guardian'}</span></td>
-                <td data-label="Actions">
-                <div class="action-btns">
-                    
-                    <button class="act-btn view" title="View"  onclick="openViewModal(${p.id})">
-                        <span class="material-icons-round">visibility</span>
-                    </button>
-                    <button class="act-btn edit"   title="Edit"  onclick="openEditModal(${p.id})">
-                    <span class="material-icons-round">drive_file_rename_outline</span>
-                    </button>
-                    <button class="act-btn delete" title="Delete" onclick="openDeleteModal(${p.id})">
-                    <span class="material-icons-round">delete</span>
-                    </button>
-                </div>
-                </td>
-            </tr>
-            `).join('');
-
-            renderPagination();
-        }
-
-        function renderPagination() {
-            const total = Math.ceil(filteredData.length / perPage);
-            const info  = document.getElementById('pageInfo');
-            const wrap  = document.getElementById('paginationBtns');
-            const s = (currentPage-1)*perPage+1, e = Math.min(currentPage*perPage, filteredData.length);
-            info.textContent = filteredData.length ? `Showing ${s}–${e} of ${filteredData.length}` : 'No results';
-
-            const btnStyle = (active) => `
-            display:inline-flex;align-items:center;justify-content:center;
-            width:32px;height:32px;border-radius:8px;border:1px solid rgba(0,0,0,.1);
-            font-size:.78rem;font-weight:600;cursor:pointer;font-family:inherit;
-            background:${active?'linear-gradient(195deg,#ec407a,#d81b60)':'#fff'};
-            color:${active?'#fff':'var(--dark)'};
-            box-shadow:${active?'0 4px 12px var(--pink-shadow)':'none'};
-            `;
-
-            let html = `<button style="${btnStyle(false)}" onclick="changePage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
-            for (let i=1;i<=total;i++) {
-            html += `<button style="${btnStyle(i===currentPage)}" onclick="changePage(${i})">${i}</button>`;
-            }
-            html += `<button style="${btnStyle(false)}" onclick="changePage(${currentPage+1})" ${currentPage===total||total===0?'disabled':''}>›</button>`;
-            wrap.innerHTML = html;
-        }
-
-        function changePage(p) {
-            const total = Math.ceil(filteredData.length / perPage);
-            if (p < 1 || p > total) return;
-            currentPage = p;
-            renderTable();
-        }
-
-        /* Search */
-        document.getElementById('tableSearch').addEventListener('input', function() {
-            const q = this.value.toLowerCase();
-            filteredData = students.filter(p =>
-                (p.full_name ?? '').toLowerCase().includes(q) ||
-                String(p.class_id ?? '').toLowerCase().includes(q) ||
-                String(p.section_id ?? '').toLowerCase().includes(q) ||
-                (p.gender ?? '').toLowerCase().includes(q) ||
-                (p.register_no ?? '').toLowerCase().includes(q) ||
-                String(p.roll_no ?? '').toLowerCase().includes(q) ||
-                (p.guardians?.[0]?.name ?? '').toLowerCase().includes(q)
-            );
-            currentPage = 1;
-            renderTable();
+@push('scripts')
+<script>
+    function exportStudentCSV() {
+        const table = document.getElementById('studentTable');
+        if (!table) return;
+        let csv = [];
+        const rows = table.querySelectorAll('tr');
+        rows.forEach(row => {
+            const cols = row.querySelectorAll('th:not(.no-print), td:not(.no-print)');
+            const rowData = Array.from(cols).map(col => `"${col.innerText.trim()}"`);
+            csv.push(rowData.join(','));
         });
+        const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'students.csv';
+        a.click();
+    }
 
-        /* Sort */
-        function sortTable(col) { 
-            const ths = document.querySelectorAll('.mat-table th');
-            ths.forEach(th => th.classList.remove('sorted-asc','sorted-desc'));
-            if (sortCol === col) sortAsc = !sortAsc;
-            else { sortCol = col; sortAsc = true; }
-            ths[col].classList.add(sortAsc ? 'sorted-asc' : 'sorted-desc');
+    function printTable() {
+        const table = document.getElementById('studentTable');
+        if (!table) return;
 
-            filteredData.sort((a, b) => {
-            const keys = ['full_name', 'class_id', 'section_id', 'gender', 'register_no', 'roll_no', 'guardian_name'];
-            const k = keys[col];
-            if (!k) return 0;
-            const av = a[k], bv = b[k];
-            if (typeof av === 'number') return sortAsc ? av - bv : bv - av;
-            return sortAsc ? String(av).localeCompare(String(bv)) : String(bv).localeCompare(String(av));
-            });
-            renderTable();
-        }
+        // Clone table and remove no-print columns entirely
+        const clone = table.cloneNode(true);
+        clone.querySelectorAll('.no-print').forEach(el => el.remove());
 
-        // View Modal
-        function openViewModal(id) {
-            const p = students.find(item => item.id === id);
-            if (!p) return;
+        const win = window.open('', '', 'width=900,height=700');
+        win.document.write(`
+            <html><head><title>Student List</title>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+            <style>
+                body { padding: 20px; font-size: 13px; }
+                table { width: 100%; border-collapse: collapse; }
+                th, td { border: 1px solid #dee2e6; padding: 8px 10px; font-size: 12px; }
+                th { background: #f8f9fa; font-weight: 600; }
+            </style>
+            </head><body>${clone.outerHTML}</body></html>
+        `);
+        win.document.close();
+        win.focus();
+        win.print();
+        win.close();
+    }
+</script>
+@endpush
 
-            const setText = (id, val) => {
-                const el = document.getElementById(id);
-                if (el) el.textContent = val ?? '';
-            };
+@push('scripts')
+<script>
+    document.addEventListener('livewire:initialized', () => {
+        Livewire.hook('morph.updated', ({ el }) => {
+            setTimeout(() => {
+                el.querySelectorAll('.input-group-outline .form-select').forEach(function(select) {
+                    if (!select.nextElementSibling || !select.nextElementSibling.classList.contains('custom-select-wrapper')) {
+                        if (typeof buildCustomSelect === 'function') buildCustomSelect(select);
+                    }
+                });
 
-            const img = document.getElementById('viewPhoto');
-            if (img) img.src = p.photo ? '/storage/' + p.photo : '/assets/img/default-user.jpg';
+                el.querySelectorAll('.input-group-outline input').forEach(function(input) {
+                    var group = input.closest('.input-group');
+                    if (!group) return;
+                    if (input.value && input.value.trim() !== '') {
+                        group.classList.add('is-filled');
+                    } else {
+                        group.classList.remove('is-filled');
+                    }
+                    if (input._materialInit) return;
+                    input._materialInit = true;
+                    input.addEventListener('focus', function() { group.classList.add('is-focused'); });
+                    input.addEventListener('blur', function() {
+                        group.classList.remove('is-focused');
+                        group.classList.toggle('is-filled', !!input.value.trim());
+                    });
+                    input.addEventListener('input', function() {
+                        group.classList.toggle('is-filled', !!input.value.trim());
+                    });
+                });
 
-            setText('viewFullName', p.full_name);
-            setText('viewClass', p.class_id);
-            setText('viewSection', p.section_id);
-            setText('viewCategory', p.category_id);
-            setText('viewRegisterNo', p.register_no);
-            setText('viewRollNo', p.roll_no);
-            setText('viewGender', p.gender);
-            setText('viewGuardianName', p.guardians?.[0]?.name);
-
-            new bootstrap.Modal(document.getElementById('viewStudentModal')).show();
-        }
-
-        // Delete Modal
-        function openDeleteModal(id) {
-            deleteTargetId = id;
-            const p = students.find(x => x.id === id);
-            if (!p) return;
-            document.getElementById('deleteName').textContent = `"${p?.full_name}" will be permanently deleted.`;
-            new bootstrap.Modal(document.getElementById('deleteModal')).show();
-        }
-
-        function confirmDelete() {
-            Livewire.dispatch('deleteConfirmed', {
-                id: deleteTargetId
-            });
-
-            Livewire.on('refresh-list', () => {
-                window.location.reload();
-            });
-
-            const idx = students.findIndex(x => x.id === deleteTargetId);
-            if (idx > -1) {
-            students.splice(idx, 1);
-            filteredData = [...students];
-            renderTable();
-            }
-            bootstrap.Modal.getInstance(document.getElementById('deleteModal')).hide();
-
-            
-        }
-
-        
-
-        /* export CSV */
-        document.getElementById('exportBtn').addEventListener('click', function() {
-            const header = 'Product,Category,Price,SKU,Quantity,Status\n';
-            const rows = filteredData.map(p => `"${p.name}","${p.category}","$${p.price}","${p.sku}","${p.qty}","${p.status}"`).join('\n');
-            const blob = new Blob([header + rows], {type:'text/csv'});
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'products.csv'; a.click();
+                el.querySelectorAll('.input-group-outline input[type="date"]').forEach(function(input) {
+                    if (!input._dpInit) {
+                        if (typeof _initDatepickers === 'function') _initDatepickers();
+                    }
+                });
+            }, 0);
         });
-
-        /* init */
-        renderTable();
-    </script>
-    @endpush
+    });
+</script>
+@endpush

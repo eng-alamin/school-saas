@@ -92,10 +92,10 @@ class StoreComponent extends Component
 
         if ($this->editId) {
             InventoryStore::findOrFail($this->editId)->update($data);
-            session()->flash('success', 'Data updated successfully!');
+            $this->dispatch('toast', type: 'success', message: 'Data updated successfully!');
         } else {
             InventoryStore::create($data);
-            session()->flash('success', 'Data created successfully!');
+            $this->dispatch('toast', type: 'success', message: 'Data created successfully!');
         }
 
         $this->showModal = false;
@@ -135,6 +135,6 @@ class StoreComponent extends Component
         $record->delete();
         $this->confirmDelete = false;
         $this->deleteId = null;
-        session()->flash('success', 'Data deleted successfully!');
+        $this->dispatch('toast', type: 'success', message: 'Data deleted successfully!');
     }
 }

@@ -22,6 +22,8 @@ class EmployeeListComponent extends Component
 
     public function delete($id)
     {
+
+    dd($id);
         $data = Employee::findOrFail($id);
         $data->delete();
 

@@ -8,9 +8,9 @@
 
       <div class="row g-4 p-5">
         <div class="col-md-6">
-            <div wire:ignore class="input-group input-group-outline">
+            <div class="input-group input-group-outline">
                 <label class="form-label">Class <span class="req">*</span></label>
-                <select wire:model.live="class_id" class="form-select" id="sectionSelect">
+                <select wire:model.live="class_id" class="form-select">
                     <option value="">Select Class</option>
                     @foreach ($classes as $c)
                         <option value="{{ $c->id }}">{{ $c->name }}</option>
@@ -19,13 +19,14 @@
             </div>
             @error('class_id') <span class="text-danger">{{ $message }}</span> @enderror
         </div>
+
         <div class="col-md-6">
-            <div wire:ignore class="input-group input-group-outline">
+            <div class="input-group input-group-outline">
                 <label class="form-label">Section <span class="req">*</span></label>
-                <select wire:model.live="section_id" class="form-select" id="sectionSelect">
-                    <option value="">Select Section</option>
-                    @foreach ($sections as $s)
-                        <option value="{{ $s->id }}">{{ $s->name }}</option>
+                <select wire:model="section_id" class="form-select">
+                    <option value="">{{ empty($availableSections) ? 'Select class first' : 'Select Section' }}</option>
+                    @foreach ($availableSections as $s)
+                        <option value="{{ $s['id'] }}">{{ $s['name'] }}</option>
                     @endforeach
                 </select>
             </div>
@@ -37,7 +38,7 @@
             </button>
         </div>
         <div class="col-md-12 text-center">
-            <a href="{{ route('tenant.academic.class-schedule.create') }}" class="btn-pink w-100 d-flex justify-content-center align-items-center">
+            <a href="{{ route('tenant.academic.class-schedule.create', ['tenant' => tenant('id')]) }}" class="btn-pink w-100 d-flex justify-content-center align-items-center">
                 <span class="material-icons-round" style="font-size:16px">add</span><span>New Schedule</span>
             </a>
         </div>
@@ -294,4 +295,59 @@
             #sched-main{padding-top:20px}
             }
         </style>
+    @endpush
+
+
+    @push('scripts')
+    <script>
+        document.addEventListener('livewire:initialized', () => {
+            Livewire.hook('morph.updated', ({ el }) => {
+                setTimeout(() => {
+
+                    // ✅ Select re-init
+                    el.querySelectorAll('.input-group-outline .form-select').forEach(function(select) {
+                        if (!select.nextElementSibling || !select.nextElementSibling.classList.contains('custom-select-wrapper')) {
+                            buildCustomSelect(select);
+                        }
+                    });
+
+                    // ✅ Text/Time input — is-filled re-apply
+                    el.querySelectorAll('.input-group-outline input').forEach(function(input) {
+                        var group = input.closest('.input-group');
+                        if (!group) return;
+
+                        // value থাকলে is-filled দাও
+                        if (input.value && input.value.trim() !== '') {
+                            group.classList.add('is-filled');
+                        } else {
+                            group.classList.remove('is-filled');
+                        }
+
+                        // Duplicate listener এড়াতে flag চেক
+                        if (input._materialInit) return;
+                        input._materialInit = true;
+
+                        input.addEventListener('focus', function() {
+                            group.classList.add('is-focused');
+                        });
+                        input.addEventListener('blur', function() {
+                            group.classList.remove('is-focused');
+                            group.classList.toggle('is-filled', !!input.value.trim());
+                        });
+                        input.addEventListener('input', function() {
+                            group.classList.toggle('is-filled', !!input.value.trim());
+                        });
+                    });
+
+                    // ✅ Datepicker re-init
+                    el.querySelectorAll('.input-group-outline input[type="date"]').forEach(function(input) {
+                        if (!input._dpInit) {
+                            _initDatepickers();
+                        }
+                    });
+
+                }, 0);
+            });
+        });
+    </script>
     @endpush
