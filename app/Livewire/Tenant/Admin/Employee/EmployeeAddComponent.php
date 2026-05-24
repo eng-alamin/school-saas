@@ -7,10 +7,10 @@ use App\Models\Employee;
 use App\Models\Department;
 use App\Models\Designation;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
-use Livewire\WithFileUploads;
+
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rule;
+use Livewire\WithFileUploads;
 
 class EmployeeAddComponent extends Component
 {
@@ -33,7 +33,8 @@ class EmployeeAddComponent extends Component
     public $email;
     public $present_address;
     public $permanent_address;
-    public $photo;
+    
+    public $photo_upload;
 
     // Login Details
     public $username;
@@ -47,19 +48,22 @@ class EmployeeAddComponent extends Component
     public $ifsc_code;
     public $account_no;
 
-    public function render()
+    public function rules()
     {
-        $employees = Employee::all();
-        $departments = Department::all();
-        $designations = Designation::all();
+        return [
+            'role' => 'required',
+            // 'joining_date' => 'required|date',
+            'designation_id' => 'required|exists:designations,id',
+            'department_id' => 'required|exists:departments,id',
 
-        return view('livewire.tenant.admin.employee.employee-add-component')
-        ->with('employees', $employees)
-        ->with('departments', $departments)
-        ->with('designations', $designations)
-        ->layout('layouts.tenant.app', [
-            'title' => "Create Employee | Monarchy School",
-        ]);
+            'name' => 'required',
+            'mobile' => 'nullable|string|max:20',
+            'email' => 'nullable|email',
+            'photo_upload'       => 'nullable',
+            
+            'username' => 'required|unique:users,username',
+            'password' => 'nullable|min:4',
+        ];
     }
 
     public function resetForm()
@@ -72,27 +76,19 @@ class EmployeeAddComponent extends Component
         $this->dispatch('validation-failed');
     }
 
-    public function rules()
-    {
-        return [
-            'role' => 'required',
-            // 'joining_date' => 'required|date',
-            'designation_id' => 'required|exists:designations,id',
-            'department_id' => 'required|exists:departments,id',
-
-            'name' => 'required',
-            'mobile' => 'nullable|string|max:20',
-            'email' => 'nullable|email',
-            'photo' => 'nullable|image|max:2048',
-            // 'username' => 'required|unique:employees,username',
-            'password' => 'required|min:4',
-        ];
-    }
-
-    
     public function updated($propertyName)
     {
         $this->validateOnly($propertyName, $this->rules());
+    }
+
+    public function safePreviewUrl($upload): ?string
+    {
+        if (!$upload) return null;
+        try {
+            return $upload->temporaryUrl();
+        } catch (\Throwable $e) {
+            return null;
+        }
     }
 
     public function save()
@@ -100,23 +96,30 @@ class EmployeeAddComponent extends Component
         
         try {
 
-            $data = $this->validate($this->rules());
+            $this->validate($this->rules());
+
+            $userPassword = !empty($this->password)
+                ? $this->password
+                : '1234';
+
+            $userData = [
+                'role' => $this->role,
+                'name'     => $this->name,
+                'username' => $this->username,
+                'email'    => $this->email,
+                'password' => $userPassword,
+            ];
+
+            $user = User::create($userData);
 
             // Upload photo
-            $photoPath = $this->photo?->store('students', 'public');
-
-            $user = User::create([
-                'role' => $this->role,
-                'name' => $this->name,
-                // 'username' => $this->username,
-                'email' => $this->email,
-                'password' => Hash::make($this->password),
-            ]);
+            $photoPath = $this->photo_upload 
+            ? \App\Helpers\TenantFileHelper::store($this->photo_upload, 'employees') 
+            : null;
 
             $employee = Employee::create([
                 // Academic Details
                 'user_id' => $user->id,
-                'role' => $this->role,
                 'joining_date' => $this->joining_date,
                 'designation_id' => $this->designation_id,
                 'department_id' => $this->department_id,
@@ -144,13 +147,28 @@ class EmployeeAddComponent extends Component
             ]);
 
             $this->dispatch('toast', type: 'success', message: 'Employee created successfully!');
-
             $this->resetForm();
 
         } catch (\Illuminate\Validation\ValidationException $e) {
             $this->dispatch('validation-failed');
+             $this->dispatch('toast', type: 'error', message: 'An error occurred while creating the parent.');
             throw $e;
         }
+    }
+
+    public function render()
+    {
+        $employees = Employee::all();
+        $departments = Department::all();
+        $designations = Designation::all();
+
+        return view('livewire.tenant.admin.employee.employee-add-component')
+        ->with('employees', $employees)
+        ->with('departments', $departments)
+        ->with('designations', $designations)
+        ->layout('layouts.tenant.app', [
+            'title' => "Create Employee | Monarchy School",
+        ]);
     }
 
 

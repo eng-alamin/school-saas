@@ -166,7 +166,12 @@ class TeacherAssignComponent extends Component
             ->paginate($this->perPage);
 
         $classes  = AcademicClass::orderBy('id')->get();
-        $teachers  = Employee::where('role', 'teacher')->orderBy('id')->get();
+        $teachers = Employee::with(['designation', 'department', 'user'])
+            ->whereHas('user', function ($q) {
+                $q->where('role', 'teacher');
+            })
+            ->orderBy('id', 'asc')
+            ->get();
 
         return view('livewire.tenant.admin.academic.teacher-assign-component')
             ->with('assigns', $assigns)

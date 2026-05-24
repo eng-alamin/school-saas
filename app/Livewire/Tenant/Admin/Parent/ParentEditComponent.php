@@ -3,13 +3,21 @@
 namespace App\Livewire\Tenant\Admin\Parent;
 
 use Livewire\Component;
+use App\Models\User;
 use App\Models\Guardian;
-use Livewire\WithFileUploads;
+
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rule;
+use Livewire\WithFileUploads;
 
 class ParentEditComponent extends Component
 {
+    use WithFileUploads;
+
+    public $guardianId;
+    public $userId;
+    public $guardian;
+
     public $name;
     public $relation;
     public $father_name;
@@ -20,42 +28,34 @@ class ParentEditComponent extends Component
     public $mobile;
     public $email;
     public $address;
+
     public $photo;
+    public $photo_upload;
+
     public $username;
     public $password;
-
-    public $parent_id;
+    public $password_confirmation;
 
     public function mount($id)
     {
-        $parent = Guardian::findOrFail($id);
-        $this->parent_id = $parent->id;
-        $this->name = $parent->name;
-        $this->relation = $parent->relation;
-        $this->father_name = $parent->father_name;
-        $this->mother_name = $parent->mother_name;
-        $this->occupation = $parent->occupation;
-        $this->income = $parent->income;
-        $this->education = $parent->education;
-        $this->mobile = $parent->mobile;
-        $this->email = $parent->email;
-        $this->address = $parent->address;
-        $this->photo = $parent->photo;
+        $this->guardianId = $id;
+        $this->guardian = Guardian::findOrFail($id);
+        $this->userId = $this->guardian->user_id;
 
-        $this->username = $parent->username;
-    }
+        $this->name = $this->guardian->name;
+        $this->relation = $this->guardian->relation;
+        $this->father_name = $this->guardian->father_name;
+        $this->mother_name = $this->guardian->mother_name;
+        $this->occupation = $this->guardian->occupation;
+        $this->income = $this->guardian->income;
+        $this->education = $this->guardian->education;
+        $this->mobile = $this->guardian->mobile;
+        $this->email = $this->guardian->email;
+        $this->address = $this->guardian->address;
 
-    public function render()
-    {
-        return view('livewire.tenant.admin.parent.parent-edit-component')
-            ->layout('layouts.tenant.app', [
-                'title' => "Edit Parent | Monarchy School",
-            ]);
-    }
+        $this->photo = $this->guardian->photo;
 
-    protected function failedValidation($validator)
-    {
-        $this->dispatch('validation-failed');
+        $this->username = $this->guardian->user->username;
     }
 
     public function rules()
@@ -68,11 +68,19 @@ class ParentEditComponent extends Component
             'occupation' => 'nullable|string|max:255',
             'income' => 'nullable|numeric',
             'education' => 'nullable|string|max:255',
-            'mobile' => 'nullable|string|max:20',
+            'mobile' => 'required|string|max:20',
             'email' => 'nullable|email',
-            'username' => 'required|unique:guardians,username,' . $this->parent_id,
-            'password' => 'nullable|min:4',
+
+            'photo_upload'       => 'nullable',
+
+            'username'    => ['required', Rule::unique('users', 'username')->ignore($this->userId)],
+            'password'    => 'nullable|confirmed|min:4',
         ];
+    }
+
+    protected function failedValidation($validator)
+    {
+        $this->dispatch('validation-failed');
     }
 
     public function updated($propertyName)
@@ -80,27 +88,80 @@ class ParentEditComponent extends Component
         $this->validateOnly($propertyName, $this->rules());
     }
 
+    public function safePreviewUrl($upload): ?string
+    {
+        if (!$upload) return null;
+        try {
+            return $upload->temporaryUrl();
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+
+    private function deleteOldFile($path): void
+    {
+        if (!$path) {
+            return;
+        }
+
+        $fullPath = public_path($path);
+
+        if (file_exists($fullPath)) {
+            unlink($fullPath);
+        }
+    }
+
     public function update()
     {
         try {
-            $data = $this->validate($this->rules());
+            $this->validate($this->rules());
 
-            $parent = Guardian::findOrFail($this->parent_id);
+            $userData = [
+                'name'     => $this->name,
+                'username' => $this->username,
+                'email'    => $this->email,
+            ];
 
-            if ($this->photo) {
-                $data['photo'] = $this->photo->store('parents', 'public');
+            if (!empty($this->password)) {
+                $userData['password'] = $this->password;
             }
 
-            if ($this->password) {
-                $data['password'] = bcrypt($this->password);
+            $user = User::with('guardian')->findOrFail($this->userId);
+            $user->update($userData);
+
+            $guardian = [
+                'name'        => $this->name,
+                'relation'    => $this->relation,
+                'father_name' => $this->father_name,
+                'mother_name' => $this->mother_name,
+                'occupation'  => $this->occupation,
+                'income'      => $this->income,
+                'education'   => $this->education,
+                'mobile'      => $this->mobile,
+                'email'       => $this->email,
+                'address'     => $this->address,
+            ];
+
+            if ($this->photo_upload) {
+                $this->deleteOldFile($this->student->photo);
+                $guardian['photo'] = \App\Helpers\TenantFileHelper::store($this->photo_upload, 'guardians');
             }
 
-            $parent->update($data);
+            $this->guardian->update($guardian);
 
             $this->dispatch('toast', type: 'success', message: 'Parent updated successfully!');
         } catch (\Exception $e) {
+            $this->dispatch('validation-failed');
             $this->dispatch('toast', type: 'error', message: 'An error occurred while creating the parent.');
             throw $e;
         }
+    }
+
+    public function render()
+    {
+        return view('livewire.tenant.admin.parent.parent-edit-component')
+            ->layout('layouts.tenant.app', [
+                'title' => "Edit Parent | Monarchy School",
+            ]);
     }
 }

@@ -72,7 +72,7 @@
                             <td>
                                 <div class="d-flex align-items-center gap-2">
                                     @if($t->logo_path)
-                                        <img src="{{ asset('storage/'.$t->logo_path) }}" class="avatar" alt="">
+                                        <img src="{{ asset($t->logo_path) }}" class="avatar" alt="">
                                     @else
                                         <div class="avatar-placeholder">{{ strtoupper(substr($t->name,0,1)) }}</div>
                                     @endif
@@ -189,7 +189,7 @@
                             <input type="file" class="form-control @error('logo') is-invalid @enderror" wire:model="logo" accept="image/*">
                             @error('logo')<div class="invalid-feedback">{{ $message }}</div>@enderror
                             @if($existingLogo)
-                                <img src="{{ asset('storage/'.$existingLogo) }}" height="40" class="mt-2 rounded">
+                                <img src="{{ asset($existingLogo) }}" height="40" class="mt-2 rounded">
                             @endif
                         </div>
                         <div class="col-12">
@@ -284,7 +284,7 @@
                                 gap:14px;
                             ">
                                 @if($viewRecord->logo_path)
-                                    <img src="{{ asset('storage/'.$viewRecord->logo_path) }}"
+                                    <img src="{{ asset($viewRecord->logo_path) }}"
                                         style="height:44px;border-radius:6px;background:#fff;padding:2px;">
                                 @else
                                     <div style="
@@ -597,7 +597,7 @@
                             @if($viewRecord->logo_path)
                             <div class="col-12">
                                 <p style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#9ca3af;margin-bottom:8px;">LOGO</p>
-                                <img src="{{ asset('storage/'.$viewRecord->logo_path) }}"
+                                <img src="{{ asset($viewRecord->logo_path) }}"
                                     style="height:56px;border-radius:8px;border:1px solid #e5e7eb;background:#f9fafb;padding:4px;"
                                     alt="Template Logo">
                             </div>

@@ -7,7 +7,7 @@ use App\Models\CertificateTemplate;
 use App\Models\Student;
 use App\Models\AcademicClass;
 use App\Models\AcademicSection;
-use App\Models\Setting;
+use App\Models\SettingSchool;
 use Carbon\Carbon;
 
 class GenerateStudentComponent extends Component
@@ -101,7 +101,7 @@ class GenerateStudentComponent extends Component
         ]);
 
         $template  = CertificateTemplate::findOrFail($this->filterTemplate);
-        $institute = Setting::first(); // ← institute info
+        $institute = SettingSchool::first(); // ← institute info
 
         $students = Student::with(['class', 'section', 'category'])
             ->whereIn('id', $this->selectedIds)
@@ -113,7 +113,7 @@ class GenerateStudentComponent extends Component
 
             // Student photo HTML
             $photoHtml = $student->photo
-                ? '<img src="' . asset('storage/' . $student->photo) . '"
+                ? '<img src="' . asset($student->photo) . '"
                          style="width:80px;height:80px;object-fit:cover;
                                 border-radius:6px;border:2px solid #ddd;">'
                 : '<div style="width:80px;height:80px;background:#f3f4f6;
@@ -127,54 +127,59 @@ class GenerateStudentComponent extends Component
                     // ── Institute placeholders ──
                     '{institute_name}',
                     '{institute_email}',
-                    '{mobileno}',
+                    '{institute_mobile}',
                     '{institute_address}',
 
                     // ── Student placeholders ──
                     '{name}',
-                    '{full_name}',
                     '{register_no}',
-                    '{roll_no}',
+                    '{roll}',
                     '{class}',
                     '{section}',
                     '{category}',
-                    '{mobile}',
+                    '{mobile_no}',
                     '{blood_group}',
-                    '{dob}',
+                    '{birthday}',
                     '{gender}',
                     '{religion}',
                     '{session}',
                     '{admission_date}',
                     '{issue_date}',
 
+                    // ── Guardian placeholder ──
+                    '{father_name}',
+                    '{mother_name}',
+
                     // ── Photo placeholder ──
                     '{student_photo}',
                 ],
                 [
                     // ── Institute values ──
-                    $institute?->institute_name  ?? '',
-                    $institute?->institute_email ?? '',
-                    $institute?->mobile          ?? '',
-                    $institute?->address         ?? '',
+                    $institute?->name  ?? '',
+                    $institute?->email ?? '',
+                    $institute?->mobile ?? '',
+                    $institute?->address ?? '',
 
                     // ── Student values ──
-                    $student->full_name,
-                    $student->full_name,
+                    $student->name,
                     $student->register_no   ?? '',
                     $student->roll_no       ?? '',
                     $student->class?->name  ?? '',
                     $student->section?->name ?? '',
                     $student->category?->name ?? '',
-                    $student->mobile        ?? '',
-                    $student->full_blood_group ?? '',
-                    $student->dob
-                        ? Carbon::parse($student->dob)->format('d M Y') : '',
+                    $student->mobile_no        ?? '',
+                    $student->blood_group ?? '',
+                    $student->dob ? Carbon::parse($student->dob)->format('d M Y') : '',
                     $student->gender        ?? '',
                     $student->religion      ?? '',
                     $student->academic_year ?? '',
                     $student->admission_date
                         ? Carbon::parse($student->admission_date)->format('d M Y') : '',
                     Carbon::parse($this->issue_date)->format('d M Y'),
+
+                    // ── Guardian placeholder ──
+                    $student->guardians->first()?->father_name ?? '',
+                    $student->guardians->first()?->mother_name ?? '',
 
                     // ── Photo as inline img ──
                     $photoHtml,
@@ -184,7 +189,7 @@ class GenerateStudentComponent extends Component
 
             return [
                 'student_id'  => $student->id,
-                'name'        => $student->full_name,
+                'name'        => $student->name,
                 'register_no' => $student->register_no,
                 'roll_no'     => $student->roll_no,
                 'class'       => $student->class?->name,

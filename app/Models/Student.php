@@ -8,6 +8,16 @@ class Student extends Model
 {
     protected $guarded = [];
     
+    public function session()
+    {
+        return $this->belongsTo(AcademicSession::class, 'session_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
     public function guardians()
     {
         return $this->belongsToMany(

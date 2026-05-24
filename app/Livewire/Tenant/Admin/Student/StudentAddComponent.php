@@ -1,19 +1,21 @@
 <?php
 
-namespace App\Livewire\Tenant\Admin;
+namespace App\Livewire\Tenant\Admin\Student;
 
 use Livewire\Component;
+use App\Models\User;
 use App\Models\Student;
 use App\Models\Guardian;
 use App\Models\AcademicSession;
 use App\Models\AcademicClass;
 use App\Models\AcademicSection;
 use App\Models\AcademicCategory;
-use Livewire\WithFileUploads;
+
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rule;
+use Livewire\WithFileUploads;
 
-class AdmissionCreateComponent extends Component
+class StudentAddComponent extends Component
 {
     use WithFileUploads;
 
@@ -34,7 +36,8 @@ class AdmissionCreateComponent extends Component
     public $email;
     public $present_address;
     public $permanent_address;
-    public $photo;
+
+    public $student_photo_upload;
 
     public $username;
     public $password; 
@@ -48,6 +51,8 @@ class AdmissionCreateComponent extends Component
     public $guardian_address;
     public $guardian_username, $guardian_password, $guardian_password_confirmation;
 
+    public $guardian_photo_upload;
+
     public $previous_school;
     public $qualification;
     public $remarks;
@@ -57,27 +62,38 @@ class AdmissionCreateComponent extends Component
 
     public function mount()
     {
+        $session = AcademicSession::where('is_current', true)->first();
+        $this->session_id = $session->id;
+
         $this->admission_date = now()->format('Y-m-d');
         $this->gender = 'male';
+
+        $this->dispatch('date-updated', date: $this->admission_date);
+        $this->dispatch('date-updated', date: $this->dob);
     }
 
-    public function render()
-    {
-        $sessions = AcademicSession::orderBy('name')->get();
-        $classes = AcademicClass::orderBy('id')->get();
-        $sections = AcademicSection::orderBy('name')->get();
-        $categories = AcademicCategory::orderBy('name')->get();
-        $guardians = Guardian::all();
 
-        return view('livewire.tenant.admin.admission-create-component')
-        ->with('sessions', $sessions)
-        ->with('classes', $classes)
-        ->with('sections', $sections)
-        ->with('categories', $categories)
-        ->with('guardians', $guardians)
-        ->layout('layouts.tenant.app', [
-            'title' => "Create Admission | Monarchy School",
-        ]);
+    public function rules()
+    {
+        return [
+            'session_id' => 'required',
+            'register_no' => 'required|unique:students,register_no',
+            'name' => 'required',
+
+            'student_photo_upload'       => 'nullable',
+
+            'username' => 'required|unique:users,username',
+            'password' => 'nullable|confirmed|min:4',
+
+            'guardian_id' => $this->guardian_exists ? 'required' : 'nullable',
+
+            'guardian_name' => !$this->guardian_exists ? 'required' : 'nullable',
+            'guardian_relation' => !$this->guardian_exists ? 'required' : 'nullable',
+            'guardian_mobile' => !$this->guardian_exists ? 'required' : 'nullable',
+            'guardian_email' => !$this->guardian_exists ? 'required|email' : 'nullable',
+
+            'guardian_photo_upload'       => 'nullable',
+        ];
     }
 
     public function resetForm()
@@ -90,43 +106,54 @@ class AdmissionCreateComponent extends Component
         $this->dispatch('validation-failed');
     }
 
-    public function rules()
-    {
-        return [
-            'session_id' => 'required',
-            'register_no' => 'required|unique:students,register_no',
-            'name' => 'required',
-            'username' => 'required|unique:students,username',
-            'password' => 'required|confirmed|min:4',
-
-            'guardian_id' => $this->guardian_exists ? 'required' : 'nullable',
-
-            'guardian_name' => !$this->guardian_exists ? 'required' : 'nullable',
-            'guardian_relation' => !$this->guardian_exists ? 'required' : 'nullable',
-            'guardian_mobile' => !$this->guardian_exists ? 'required' : 'nullable',
-            'guardian_email' => !$this->guardian_exists ? 'required|email' : 'nullable',
-            'guardian_occupation' => !$this->guardian_exists ? 'required' : 'nullable',
-            'guardian_income' => !$this->guardian_exists ? 'required' : 'nullable',
-            'guardian_education' => !$this->guardian_exists ? 'required' : 'nullable',
-        ];
-    }
-
     public function updated($propertyName)
     {
         $this->validateOnly($propertyName, $this->rules());
     }
 
+    public function safePreviewUrl($upload): ?string
+    {
+        if (!$upload) return null;
+        try {
+            return $upload->temporaryUrl();
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+
     public function save()
     {
-        
         try {
 
-            $data = $this->validate($this->rules());
+            $this->validate($this->rules());
+
+            $userPassword = !empty($this->password)
+                ? $this->password
+                : '1234';
+
+            // ── Student user update
+            $userData = [
+                'role'     => 'student',
+                'name'     => $this->name,
+                'username' => $this->username,
+                'email'    => $this->email,
+                'password' => $userPassword,
+            ];
+
+            $user = User::create($userData);
 
             // Upload photo
-            // $photoPath = $this->photo?->store('students', 'public');
+            $studentPhotoPath = $this->student_photo_upload 
+            ? \App\Helpers\TenantFileHelper::store($this->student_photo_upload, 'students') 
+            : null;
+
+            $guardianPhotoPath = $this->guardian_photo_upload 
+            ? \App\Helpers\TenantFileHelper::store($this->guardian_photo_upload, 'students') 
+            : null;
 
             $student = Student::create([
+                'user_id'     => $user->id,
+
                 'session_id' => $this->session_id,
                 'register_no' => $this->register_no,
                 'roll_no' => $this->roll_no,
@@ -144,17 +171,27 @@ class AdmissionCreateComponent extends Component
                 'email' => $this->email,
                 'present_address' => $this->present_address,
                 'permanent_address' => $this->permanent_address,
-                // 'photo' => $photoPath,
-
-                'username' => $this->username,
-                'password' => bcrypt($this->password),
+                'photo' => $studentPhotoPath,
             ]);
 
             // Guardian
                 if ($this->guardian_exists) {
                     $student->guardians()->syncWithoutDetaching([$this->guardian_id]);
                 } else {
+                    $guardianPassword = !empty($this->guardian_password)
+                        ? $this->guardian_password
+                        : '1234';
+
+                    $userGuardian = User::create([
+                        'role'     => 'parent',
+                        'name'     => $this->guardian_name,
+                        'username' => $this->guardian_username,
+                        'email'    => $this->guardian_email,
+                        'password' => $guardianPassword,
+                    ]);
+
                     $guardian = Guardian::create([
+                        'user_id'     => $userGuardian->id,
                         'name' => $this->guardian_name,
                         'relation' => $this->guardian_relation,
                         'father_name' => $this->guardian_father_name,
@@ -165,25 +202,40 @@ class AdmissionCreateComponent extends Component
                         'mobile' => $this->guardian_mobile,
                         'email' => $this->guardian_email,
                         'address' => $this->guardian_address,
-
-                        // 'photo' => $photoPath,
-                        'username' => $this->guardian_username,
-                        'password' => bcrypt('1234'),
+                        'photo' => $guardianPhotoPath,
                     ]);
 
                     $student->guardians()->attach($guardian->id);
                 }
 
-            session()->flash('success', 'Student Created Successfully');
-
-            $this->dispatch('saved');
             $this->resetForm();
 
+            $this->dispatch('date-updated', date: $this->admission_date);
+            $this->dispatch('date-updated', date: $this->dob);
             $this->dispatch('toast', type: 'success', message: 'Student created successfully!');
 
         } catch (\Illuminate\Validation\ValidationException $e) {
             $this->dispatch('validation-failed');
+            $this->dispatch('toast', type: 'error', message: 'An error occurred while creating the parent.');
             throw $e;
         }
+    }
+    public function render()
+    {
+        $sessions = AcademicSession::orderBy('name')->get();
+        $classes = AcademicClass::orderBy('id')->get();
+        $sections = AcademicSection::orderBy('name')->get();
+        $categories = AcademicCategory::orderBy('name')->get();
+        $guardians = Guardian::all();
+
+        return view('livewire.tenant.admin.student.student-add-component')
+        ->with('sessions', $sessions)
+        ->with('classes', $classes)
+        ->with('sections', $sections)
+        ->with('categories', $categories)
+        ->with('guardians', $guardians)
+        ->layout('layouts.tenant.app', [
+            'title' => "Create Admission | Monarchy School",
+        ]);
     }
 }

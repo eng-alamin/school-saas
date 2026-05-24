@@ -3,8 +3,6 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
-use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
-use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,22 +16,20 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 |
 */
 
-Route::middleware([
-    'web',
-    \Stancl\Tenancy\Middleware\InitializeTenancyByDomain::class,
-    \Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains::class,
-])->group(function () {
-
-
-    Route::domain('{tenant}.school-saas.test')->group(function () {
-        Route::get('/', function () {dd(DB::connection()->getDatabaseName()); });
-
+Route::middleware('guest')->group(function () {
         Route::get('/login', \App\Livewire\Tenant\Auth\LoginComponent::class)->name('tenant.login');
+    });
 
+Route::get('/', function () {dd(DB::connection()->getDatabaseName()); })->name('home');
+// Route::get('/login', \App\Livewire\Tenant\Auth\LoginComponent::class)->name('tenant.login');
+
+// Route::middleware(['auth'])->group(function () {
+    Route::domain('{tenant}.school-saas.test')->group(function () {
+        
         Route::get('/dashboard', \App\Livewire\Tenant\Admin\DashboardComponent::class)->name('tenant.dashboard');
-        Route::get('/student/create', \App\Livewire\Tenant\Admin\AdmissionCreateComponent::class)->name('admin.student.create');
-        Route::get('/student/list', \App\Livewire\Tenant\Admin\StudentListComponent::class)->name('tenant.student.list');
-        Route::get('/student/{id}/edit', \App\Livewire\Tenant\Admin\AdmissionCreateComponent::class)->name('admin.student.edit');
+        Route::get('/student/create', \App\Livewire\Tenant\Admin\Student\StudentAddComponent::class)->name('admin.student.add');
+        Route::get('/student/list', \App\Livewire\Tenant\Admin\Student\StudentListComponent::class)->name('admin.student.list');
+        Route::get('/student/{id}/edit', \App\Livewire\Tenant\Admin\Student\StudentEditComponent::class)->name('admin.student.edit');
         Route::get('/student/{id}/overview', \App\Livewire\Tenant\Admin\StudentOverviewComponent::class)->name('admin.student.overview');
         // Academic
         Route::get('/academic/categories', \App\Livewire\Tenant\Admin\Academic\CategoryComponent::class)->name('tenant.academic.categories');
@@ -53,10 +49,12 @@ Route::middleware([
         Route::get('/employee/add', \App\Livewire\Tenant\Admin\Employee\EmployeeAddComponent::class)->name('admin.employee.add');
         Route::get('/employee/edit/{id}', \App\Livewire\Tenant\Admin\Employee\EmployeeEditComponent::class)->name('admin.employee.edit');
 
-        Route::get('/parent/list', \App\Livewire\Tenant\Admin\Parent\ParentListComponent::class)->name('admin.parent.list');
-        Route::get('/parent/add', \App\Livewire\Tenant\Admin\Parent\ParentAddComponent::class)->name('admin.parent.add');
-        Route::get('/parent/edit/{id}', \App\Livewire\Tenant\Admin\Parent\ParentEditComponent::class)->name('admin.parent.edit');
-        
+        Route::get('parent/list', \App\Livewire\Tenant\Admin\Parent\ParentListComponent::class)->name('admin.parent.list');
+        Route::get('parent/add', \App\Livewire\Tenant\Admin\Parent\ParentAddComponent::class)->name('admin.parent.add');
+        Route::get('parent/edit/{id}', \App\Livewire\Tenant\Admin\Parent\ParentEditComponent::class)->name('admin.parent.edit');
+         Route::get('parent/{id}/overview', \App\Livewire\Tenant\Admin\Parent\ParentOverviewComponent::class)->name('admin.parent.overview');
+         Route::get('parent/{id}/child', \App\Livewire\Tenant\Admin\Parent\ParentChildComponent::class)->name('admin.parent.child');
+
         Route::get('/homework/add', \App\Livewire\Tenant\Admin\Homework\HomeworkAddComponent::class)->name('admin.homework.add');
         Route::get('/homework/list', \App\Livewire\Tenant\Admin\Homework\HomeworkListComponent::class)->name('admin.homework.list');
         Route::get('/homework/edit/{id}', \App\Livewire\Tenant\Admin\Homework\HomeworkEditComponent::class)->name('admin.homework.edit');
@@ -93,8 +91,6 @@ Route::middleware([
         Route::get('/exam/schedule/list', \App\Livewire\Tenant\Admin\Exam\ScheduleListComponent::class)->name('admin.exam.schedule.list');    
         
         Route::get('/exam/grades', \App\Livewire\Tenant\Admin\Exam\GradeComponent::class)->name('admin.exam.grades');
-        // Route::get('/exam/grades', \App\Livewire\Tenant\Admin\Exam\GradeComponent::class)->name('admin.exam.grades');
-        // Route::get('/exam/grades', \App\Livewire\Tenant\Admin\Exam\GradeComponent::class)->name('admin.exam.grades');
 
         Route::get('/attendance/students', \App\Livewire\Tenant\Admin\Attendance\StudentComponent::class)->name('admin.attendance.students');
         Route::get('/attendance/employees', \App\Livewire\Tenant\Admin\Attendance\EmployeeComponent::class)->name('admin.attendance.employees');
@@ -137,5 +133,5 @@ Route::middleware([
         Route::get('/inventory/sale/{id}/edit', \App\Livewire\Tenant\Admin\Inventory\SaleEditComponent::class)->name('admin.inventory.sale.edit');
         
         Route::get('setting/school', \App\Livewire\Tenant\Admin\Setting\SchoolComponent::class)->name('admin.setting.school');
-    });
+    // });
 });

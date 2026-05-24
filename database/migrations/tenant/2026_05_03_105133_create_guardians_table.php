@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('guardians', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->string('relation')->nullable();
             $table->string('father_name')->nullable();
@@ -24,10 +25,6 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->text('address')->nullable();
             $table->string('photo')->nullable();
-
-            // Login
-            $table->string('username')->unique();
-            $table->string('password');
             $table->timestamps();
         });
     }

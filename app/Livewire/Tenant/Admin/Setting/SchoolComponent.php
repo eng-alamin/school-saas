@@ -174,60 +174,60 @@ class SchoolComponent extends Component
         $setting = SettingSchool::firstOrNew([]);
 
         // System Logo
-if ($this->system_logo_upload) {
+    if ($this->system_logo_upload) {
 
-    $this->deleteOldFile($setting->system_logo);
+        $this->deleteOldFile($setting->system_logo);
 
-    $path = $this->system_logo_upload->storeAs(
-        'logos',
-        time() . '_system.' . $this->system_logo_upload->getClientOriginalExtension(),
-        'public'
-    );
+        $path = $this->system_logo_upload->storeAs(
+            'logos',
+            time() . '_system.' . $this->system_logo_upload->getClientOriginalExtension(),
+            'public'
+        );
 
-    $setting->system_logo = 'storage/' . $path;
-}
+        $setting->system_logo = 'storage/' . $path;
+    }
 
         // Text Logo
-if ($this->text_logo_upload) {
+        if ($this->text_logo_upload) {
 
-    $this->deleteOldFile($setting->text_logo);
+            $this->deleteOldFile($setting->text_logo);
 
-    $path = $this->text_logo_upload->storeAs(
-        'logos',
-        time() . '_text.' . $this->text_logo_upload->getClientOriginalExtension(),
-        'public'
-    );
+            $path = $this->text_logo_upload->storeAs(
+                'logos',
+                time() . '_text.' . $this->text_logo_upload->getClientOriginalExtension(),
+                'public'
+            );
 
-    $setting->text_logo = 'storage/' . $path;
-}
+            $setting->text_logo = 'storage/' . $path;
+        }
 
         // Print Logo
-if ($this->print_logo_upload) {
+        if ($this->print_logo_upload) {
 
-    $this->deleteOldFile($setting->print_logo);
+            $this->deleteOldFile($setting->print_logo);
 
-    $path = $this->print_logo_upload->storeAs(
-        'logos',
-        time() . '_print.' . $this->print_logo_upload->getClientOriginalExtension(),
-        'public'
-    );
+            $path = $this->print_logo_upload->storeAs(
+                'logos',
+                time() . '_print.' . $this->print_logo_upload->getClientOriginalExtension(),
+                'public'
+            );
 
-    $setting->print_logo = 'storage/' . $path;
-}
+            $setting->print_logo = 'storage/' . $path;
+        }
 
         // Report Logo
-if ($this->report_logo_upload) {
+        if ($this->report_logo_upload) {
 
-    $this->deleteOldFile($setting->report_logo);
+            $this->deleteOldFile($setting->report_logo);
 
-    $path = $this->report_logo_upload->storeAs(
-        'logos',
-        time() . '_report.' . $this->report_logo_upload->getClientOriginalExtension(),
-        'public'
-    );
+            $path = $this->report_logo_upload->storeAs(
+                'logos',
+                time() . '_report.' . $this->report_logo_upload->getClientOriginalExtension(),
+                'public'
+            );
 
-    $setting->report_logo = 'storage/' . $path;
-}
+            $setting->report_logo = 'storage/' . $path;
+        }
 
         $setting->fill([
             'name'                           => $this->name,

@@ -138,7 +138,7 @@
                                 <td>
                                     <div class="d-flex align-items-center gap-2">
                                         @if($student->logo_path)
-                                            <img src="{{ asset('storage/'.$student->logo_path) }}" class="avatar" alt="">
+                                            <img src="{{ asset($student->logo_path) }}" class="avatar" alt="">
                                         @else
                                             <div class="avatar-placeholder">{{ strtoupper(substr($student->name,0,1)) }}</div>
                                         @endif
@@ -197,7 +197,7 @@
                             {{-- Header Band --}}
                             <div style="background:{{ $tmpl?->accent_color ?? '#007bff' }};padding:12px 14px;text-align:center;">
                                 @if($tmpl?->logo_path)
-                                    <img src="{{ asset('storage/'.$tmpl->logo_path) }}" height="28" style="margin-bottom:4px;">
+                                    <img src="{{ asset($tmpl->logo_path) }}" height="28" style="margin-bottom:4px;">
                                 @else
                                     <i class="bi bi-mortarboard" style="font-size:1.4rem;color:rgba(255,255,255,.8);display:block;margin-bottom:2px;"></i>
                                 @endif
@@ -213,7 +213,7 @@
                                 @if($tmpl?->show_photo ?? true)
                                 <div style="flex-shrink:0;">
                                     @if(!empty($card['photo']))
-                                        <img src="{{ asset('storage/'.$card['photo']) }}"
+                                        <img src="{{ asset($card['photo']) }}"
                                             style="width:72px;height:88px;object-fit:cover;border-radius:6px;border:2px solid {{ $tmpl?->accent_color ?? '#007bff' }};">
                                     @else
                                         <div style="width:72px;height:88px;border-radius:6px;background:rgba(0,0,0,.06);
@@ -307,7 +307,14 @@
                 </div>
                 <div style="padding:12px 14px;display:flex;gap:10px;">
                     @if(!empty($card['photo']))
-                        <img src="{{ asset('storage/'.$card['photo']) }}" style="width:72px;height:88px;object-fit:cover;border-radius:6px;">
+                        <img src="{{ asset($card['photo']) }}"
+                            style="width:72px;height:88px;object-fit:cover;border-radius:6px;border:2px solid {{ $tmpl?->accent_color ?? '#007bff' }};">
+                    @else
+                        <div style="width:72px;height:88px;border-radius:6px;background:rgba(0,0,0,.06);
+                                    display:flex;align-items:center;justify-content:center;
+                                    border:2px solid {{ $tmpl?->accent_color ?? '#007bff' }};">
+                            <i class="bi bi-person" style="font-size:2rem;opacity:.3;color:{{ $tmpl?->text_color ?? '#000' }};"></i>
+                        </div>
                     @endif
                     <div style="flex:1;">
                         <div style="font-weight:700;font-size:.85rem;">{{ $card['name'] }}</div>

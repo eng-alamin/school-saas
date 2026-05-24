@@ -168,8 +168,11 @@ class EmployeeIdCardComponent extends Component
             if (!$this->filtered) return collect();
 
             return Employee::query()
-                ->when($this->filterRole, fn($q) => $q->where('role', $this->filterRole))
-                ->orderBy('name')
+                ->with(['designation', 'department', 'user'])
+                ->whereHas('user', function ($q) {
+                    $q->where('role', $this->filterRole);
+                })
+                ->orderBy('id', 'asc')
                 ->get();
         }
 

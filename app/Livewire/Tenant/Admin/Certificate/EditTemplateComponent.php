@@ -81,9 +81,9 @@ class EditTemplateComponent extends Component
             'margin_bottom'       => 'required|integer|min:0|max:300',
             'margin_left'         => 'required|integer|min:0|max:300',
             'certificate_content' => 'required|string',
-            'signature_image'     => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'logo_image'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'background_image'    => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'signature_image'     => 'nullable',
+            'logo_image'          => 'nullable',
+            'background_image'    => 'nullable',
         ];
     }
 
@@ -101,8 +101,6 @@ class EditTemplateComponent extends Component
     ];
 
     // ── Real-time validation for images ──
-    // Wrapped in try/catch to handle Flysystem metadata timing issue
-    // (Livewire fires updated* before the tmp file is fully written to disk)
     public function updatedLogoImage(): void
     {
         try {
@@ -127,6 +125,29 @@ class EditTemplateComponent extends Component
             $this->validateOnly('background_image');
         } catch (\Throwable $e) {
             //
+        }
+    }
+
+    public function safePreviewUrl($upload): ?string
+    {
+        if (!$upload) return null;
+        try {
+            return $upload->temporaryUrl();
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+
+    private function deleteOldFile($path): void
+    {
+        if (!$path) {
+            return;
+        }
+
+        $fullPath = public_path($path);
+
+        if (file_exists($fullPath)) {
+            unlink($fullPath);
         }
     }
 
@@ -160,25 +181,24 @@ class EditTemplateComponent extends Component
             if ($this->$field) {
                 // Delete old file
                 if ($this->$existingField) {
-                    Storage::disk('public')->delete($this->$existingField);
+                    $this->deleteOldFile($this->$existingField);
                 }
                 // Store new file
-                $path = $this->$field->store('certificates', 'public');
+                $path = \App\Helpers\TenantFileHelper::store($this->$field, 'certificates');
                 $data[$field]         = $path;
-                $this->$existingField = $path;  // update local state
-                $this->$field         = null;    // clear upload input
+                $this->$existingField = $path;
+                $this->$field         = null;
             }
         }
 
         $this->template->update($data);
 
-        // Re-sync existing image properties from DB
         $this->template->refresh();
         $this->existing_logo_image       = $this->template->logo_image;
         $this->existing_signature_image  = $this->template->signature_image;
         $this->existing_background_image = $this->template->background_image;
 
-        session()->flash('success', 'Certificate template updated successfully!');
+        $this->dispatch('toast', type: 'success', message: 'Certificate template updated successfully!');
     }
 
     // ── Remove individual image ──
@@ -186,11 +206,10 @@ class EditTemplateComponent extends Component
     {
         $existingField = 'existing_' . $field;
         if ($this->$existingField) {
-            Storage::disk('public')->delete($this->$existingField);
+            $this->deleteOldFile($this->$existingField);
             $this->template->update([$field => null]);
             $this->$existingField = null;
         }
-        // Also clear any pending upload
         $this->$field = null;
     }
 

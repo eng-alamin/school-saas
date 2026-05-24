@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Livewire\Tenant\Admin;
+namespace App\Livewire\Tenant\Admin\Student;
 
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Student;
+use App\Models\User;
 use App\Models\AcademicClass;
 
 class StudentListComponent extends Component
@@ -68,7 +69,9 @@ class StudentListComponent extends Component
     public function deleteRecord(): void
     {
         try {
-            Student::findOrFail($this->deleteId)->delete();
+            $student = Student::findOrFail($this->deleteId);
+            $student->user()->delete(); // cascading হলে এটাই যথেষ্ট
+            // অথবা: User::findOrFail($student->user_id)->delete();
             $this->confirmDelete = false;
             $this->deleteId      = null;
             $this->dispatch('toast', type: 'success', message: 'Student deleted successfully!');
@@ -79,8 +82,6 @@ class StudentListComponent extends Component
 
     public function render()
     {
-        // BUG FIX 2: $students render() এ build করো, filter() এ local variable না রেখে
-        // BUG FIX 3: orWhere grouping — where(fn) দিয়ে wrap করা হয়েছে
         $students = Student::with(['guardians', 'class', 'section'])
             ->when($this->hasFilter, function ($q) {
                 $q->where('class_id', $this->filter_class_id)
@@ -95,7 +96,7 @@ class StudentListComponent extends Component
 
         $classes = AcademicClass::orderBy('id')->get();
 
-        return view('livewire.tenant.admin.student-list-component')
+        return view('livewire.tenant.admin.student.student-list-component')
             ->with('students', $students)
             ->with('classes', $classes)
             ->layout('layouts.tenant.app', [

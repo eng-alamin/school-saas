@@ -1,9 +1,9 @@
-    <div class="mat-card" style="padding-top:28px">
+<div class="mat-card" style="padding-top:28px">
 
         <!-- Floating Header -->
         <div class="mat-card-header header-pink-gradient">
-            <h5><span class="material-icons-round" style="font-size:18px;vertical-align:middle;margin-right:6px">how_to_reg</span>Student Admission</h5>
-            <p>Create new student admission record</p>
+            <h5><span class="material-icons-round" style="font-size:18px;vertical-align:middle;margin-right:6px">edit</span>Edit Student</h5>
+            <p>Update student information</p>
         </div>
 
         <!-- ══ ACADEMIC DETAILS ══ -->
@@ -40,7 +40,7 @@
             <div class="col-md-3">
                 <div class="input-group input-group-outline" wire:ignore>
                     <label class="form-label">Admission Date <span class="req">*</span></label>
-                    <input type="date" wire:model="admission_date" class="form-control">
+                    <input type="date" wire:model="admission_date" data-dp-value="{{ $admission_date }}" class="form-control">
                      @error('admission_date') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
             </div>
@@ -89,93 +89,110 @@
             <span class="material-icons-round">person</span> Student Details
             </div>
             <div class="row g-4">
-            <div class="col-md-6">
+                <div class="col-md-6">
+                        <div class="input-group input-group-outline">
+                        <label class="form-label">Full Name <span class="req">*</span></label>
+                        <input type="text" wire:model="name" class="form-control" placeholder=" " onfocus="focused(this)" onfocusout="defocused(this)">
+                        @error('name') <span class="text-danger">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group input-group-outline" wire:ignore>
+                        <label class="form-label">Gender</label>
+                        <select wire:model="gender" class="form-select">
+                            <option value="male" selected>Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                        @error('gender') <span class="text-danger">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group input-group-outline" wire:ignore>
+                        <label class="form-label">Blood Group</label>
+                        <select wire:model="blood_group" class="form-select">
+                            <option value="">Select</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </select>
+                        @error('blood_group') <span class="text-danger">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group input-group-outline" wire:ignore>
+                        <label class="form-label">Date Of Birth</label>
+                        <input type="date" wire:model="dob" data-dp-value="{{ $dob }}" class="form-control" placeholder=" " onfocus="focused(this)" onfocusout="defocused(this)">
+                        @error('dob') <span class="text-danger">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group input-group-outline" wire:ignore>
+                        <label class="form-label">Religion</label>
+                        <select wire:model="religion" class="form-select">
+                            <option value="">Select</option>
+                            <option value="muslim">Muslim</option>
+                            <option value="hindu">Hindu</option>
+                            <option value="christian">Christian</option>
+                            <option value="buddhist">Buddhist</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
                     <div class="input-group input-group-outline">
-                    <label class="form-label">Full Name <span class="req">*</span></label>
-                    <input type="text" wire:model="name" class="form-control" placeholder=" " onfocus="focused(this)" onfocusout="defocused(this)">
-                    @error('name') <span class="text-danger">{{ $message }}</span> @enderror
+                        <label class="form-label">Mobile No</label>
+                        <input type="tel" wire:model="mobile" class="form-control" placeholder=" " onfocus="focused(this)" onfocusout="defocused(this)">
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-6">
-                <div class="input-group input-group-outline" wire:ignore>
-                    <label class="form-label">Gender</label>
-                    <select wire:model="gender" class="form-select">
-                        <option value="male" selected>Male</option>
-                        <option value="female">Female</option>
-                        <option value="other">Other</option>
-                    </select>
-                    @error('gender') <span class="text-danger">{{ $message }}</span> @enderror
+                <div class="col-md-4">
+                    <div class="input-group input-group-outline">
+                    <label class="form-label">Email</label>
+                    <input type="email" wire:model="email" class="form-control" placeholder=" " onfocus="focused(this)" onfocusout="defocused(this)">
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-6">
-                <div class="input-group input-group-outline" wire:ignore>
-                    <label class="form-label">Blood Group</label>
-                    <select wire:model="blood_group" class="form-select">
-                        <option value="">Select</option>
-                        <option value="A+">A+</option>
-                        <option value="A-">A-</option>
-                        <option value="B+">B+</option>
-                        <option value="B-">B-</option>
-                        <option value="AB+">AB+</option>
-                        <option value="AB-">AB-</option>
-                        <option value="O+">O+</option>
-                        <option value="O-">O-</option>
-                    </select>
-                    @error('blood_group') <span class="text-danger">{{ $message }}</span> @enderror
+                <div class="col-md-12">
+                    <div class="input-group input-group-outline">
+                    <label class="form-label">Present Address</label>
+                    <textarea wire:model="present_address" class="form-control" placeholder=" " onfocus="focused(this)" onfocusout="defocused(this)"></textarea>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-6">
-                <div class="input-group input-group-outline" wire:ignore>
-                    <label class="form-label">Date Of Birth</label>
-                    <input type="date" wire:model="dob" class="form-control" placeholder=" " onfocus="focused(this)" onfocusout="defocused(this)">
-                    @error('dob') <span class="text-danger">{{ $message }}</span> @enderror     
+                <div class="col-md-12">
+                    <div class="input-group input-group-outline">
+                    <label class="form-label">Permanent Address</label>
+                    <textarea wire:model="permanent_address" class="form-control" placeholder=" " onfocus="focused(this)" onfocusout="defocused(this)"></textarea>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="input-group input-group-outline" wire:ignore>
-                    <label class="form-label">Religion</label>
-                    <select wire:model="religion" class="form-select">
-                        <option value="">Select</option>
-                        <option value="muslim">Muslim</option>
-                        <option value="hindu">Hindu</option>
-                        <option value="christian">Christian</option>
-                        <option value="buddhist">Buddhist</option>
-                    </select>
+                <div class="col-md-12">
+                    <label style="font-size:.73rem;font-weight:600;color:var(--muted);display:block;margin-bottom:8px">
+                        Photo
+                    </label>
+                    <div class="photo-upload-box">
+                        @if($student_photo_upload)
+                            @if($this->safePreviewUrl($student_photo_upload))
+                                <img src="{{ $this->safePreviewUrl($student_photo_upload) }}" alt="Preview"
+                                    style="max-height:80px;max-width:100%;object-fit:contain;margin-bottom:6px">
+                            @else
+                                <span class="material-icons-round">check_circle</span>
+                                <span class="lbl">File selected</span>
+                            @endif
+                        @elseif($student_photo)
+                            <img src="{{ asset($student_photo) }}" alt="Photo"
+                                style="max-height:80px;max-width:100%;object-fit:contain;margin-bottom:6px">
+                        @else
+                            <span class="material-icons-round">image</span>
+                            <span class="lbl">Click to upload</span>
+                        @endif
+                        <small style="color:#bbb;font-size:.7rem">PNG, JPG up to 2MB</small>
+                        <input type="file" wire:model="student_photo_upload" accept="image/*">
+                    </div>
+                    @error('student_photo_upload') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="input-group input-group-outline">
-                    <label class="form-label">Mobile No</label>
-                    <input type="tel" wire:model="mobile" class="form-control" placeholder=" " onfocus="focused(this)" onfocusout="defocused(this)">
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="input-group input-group-outline">
-                <label class="form-label">Email</label>
-                <input type="email" wire:model="email" class="form-control" placeholder=" " onfocus="focused(this)" onfocusout="defocused(this)">
-                </div>
-            </div>
-            <div class="col-md-12">
-                <div class="input-group input-group-outline">
-                <label class="form-label">Present Address</label>
-                <textarea wire:model="present_address" class="form-control" placeholder=" " onfocus="focused(this)" onfocusout="defocused(this)"></textarea>
-                </div>
-            </div>
-            <div class="col-md-12">
-                <div class="input-group input-group-outline">
-                <label class="form-label">Permanent Address</label>
-                <textarea wire:model="permanent_address" class="form-control" placeholder=" " onfocus="focused(this)" onfocusout="defocused(this)"></textarea>
-                </div>
-            </div>
-            <div class="col-12">
-                <label style="font-size:.73rem;font-weight:600;color:var(--muted);display:block;margin-bottom:8px">Profile Picture</label>
-                <div class="photo-upload-box" id="studentPhotoBox">
-                <span class="material-icons-round">person</span>
-                <span class="lbl">Click to upload student photo</span>
-                <small style="color:#bbb;font-size:.7rem">JPG, PNG up to 2MB</small>
-                <input type="file" accept="image/*" onchange="previewPhoto(this,'studentPhotoBox')">
-                </div>
-            </div>
+
             </div>
         </div>
 
@@ -189,21 +206,21 @@
                 <div class="input-group input-group-outline">
                     <label class="form-label">Username <span class="req">*</span></label>
                     <input type="text" wire:model="username" class="form-control" value="admin@ramom.com" onfocus="focused(this)" onfocusout="defocused(this)">
-                    @error('username') <span class="text-danger">{{ $message }}</span> @enderror     
+                    @error('username') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="input-group input-group-outline">
-                    <label class="form-label">Password <span class="req">*</span></label>
+                    <label class="form-label">Password</label>
                     <input type="password" wire:model="password" class="form-control" value="1234" onfocus="focused(this)" onfocusout="defocused(this)">
-                    @error('password') <span class="text-danger">{{ $message }}</span> @enderror     
+                    @error('password') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="input-group input-group-outline">
-                    <label class="form-label">Retype Password <span class="req">*</span></label>
+                    <label class="form-label">Retype Password</label>
                     <input type="password" wire:model="password_confirmation" class="form-control" placeholder=" " onfocus="focused(this)" onfocusout="defocused(this)">
-                    @error('password_confirmation') <span class="text-danger">{{ $message }}</span> @enderror     
+                    @error('password_confirmation') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
             </div>
             </div>
@@ -245,21 +262,21 @@
                     <div class="input-group input-group-outline">
                         <label class="form-label">Name <span class="req">*</span></label>
                         <input type="text" wire:model="guardian_name" class="form-control" placeholder=" " onfocus="focused(this)" onfocusout="defocused(this)">
-                        @error('guardian_name') <span class="text-danger">{{ $message }}</span> @enderror     
+                        @error('guardian_name') <span class="text-danger">{{ $message }}</span> @enderror
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="input-group input-group-outline">
                         <label class="form-label">Relation <span class="req">*</span></label>
                         <input type="text" wire:model="guardian_relation" class="form-control" placeholder=" " onfocus="focused(this)" onfocusout="defocused(this)">
-                        @error('guardian_relation') <span class="text-danger">{{ $message }}</span> @enderror     
+                        @error('guardian_relation') <span class="text-danger">{{ $message }}</span> @enderror
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="input-group input-group-outline">
                         <label class="form-label">Father Name</label>
                         <input type="text" wire:model="guardian_father_name" class="form-control" placeholder=" " onfocus="focused(this)" onfocusout="defocused(this)">
-                        @error('guardian_father_name') <span class="text-danger">{{ $message }}</span> @enderror     
+                        @error('guardian_father_name') <span class="text-danger">{{ $message }}</span> @enderror
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -270,7 +287,7 @@
                 </div>
                 <div class="col-md-4">
                     <div class="input-group input-group-outline">
-                        <label class="form-label">Occupation <span class="req">*</span></label>
+                        <label class="form-label">Occupation</label>
                         <input type="text" wire:model="guardian_occupation" class="form-control" placeholder=" " onfocus="focused(this)" onfocusout="defocused(this)">
                         @error('guardian_occupation') <span class="text-danger">{{ $message }}</span> @enderror
                     </div>
@@ -298,25 +315,41 @@
                 </div>
                 <div class="col-md-6">
                     <div class="input-group input-group-outline">
-                        <label class="form-label">Email</label>
+                        <label class="form-label">Email <span class="req">*</span></label>
                         <input type="email" wire:model="guardian_email" class="form-control" placeholder=" " onfocus="focused(this)" onfocusout="defocused(this)">
-                        @error('guardian_email') <span class="text-danger">{{ $message }}</span> @enderror  
+                        @error('guardian_email') <span class="text-danger">{{ $message }}</span> @enderror
                     </div>
                 </div>
                 <div class="col-12">
                     <div class="input-group input-group-outline">
-                        <label class="form-label">Address <span class="req">*</span></label>
+                        <label class="form-label">Address</label>
                         <textarea wire:model="guardian_address" class="form-control" placeholder=" " onfocus="focused(this)" onfocusout="defocused(this)"></textarea>
                     </div>
                 </div>
-                <div class="col-12">
-                    <label style="font-size:.73rem;font-weight:600;color:var(--muted);display:block;margin-bottom:8px">Guardian Picture</label>
-                    <div class="photo-upload-box" id="guardianPhotoBox">
-                    <span class="material-icons-round">person</span>
-                    <span class="lbl">Click to upload guardian photo</span>
-                    <small style="color:#bbb;font-size:.7rem">JPG, PNG up to 2MB</small>
-                    <input type="file" accept="image/*" onchange="previewPhoto(this,'guardianPhotoBox')">
+                <div class="col-md-12">
+                    <label style="font-size:.73rem;font-weight:600;color:var(--muted);display:block;margin-bottom:8px">
+                        Photo
+                    </label>
+                    <div class="photo-upload-box">
+                        @if($guardian_photo_upload)
+                            @if($this->safePreviewUrl($guardian_photo_upload))
+                                <img src="{{ $this->safePreviewUrl($guardian_photo_upload) }}" alt="Preview"
+                                    style="max-height:80px;max-width:100%;object-fit:contain;margin-bottom:6px">
+                            @else
+                                <span class="material-icons-round">check_circle</span>
+                                <span class="lbl">File selected</span>
+                            @endif
+                        @elseif($guardian_photo)
+                            <img src="{{ url($guardian_photo) }}" alt="Photo"
+                                style="max-height:80px;max-width:100%;object-fit:contain;margin-bottom:6px">
+                        @else
+                            <span class="material-icons-round">image</span>
+                            <span class="lbl">Click to upload</span>
+                        @endif
+                        <small style="color:#bbb;font-size:.7rem">PNG, JPG up to 2MB</small>
+                        <input type="file" wire:model="guardian_photo_upload" accept="image/*">
                     </div>
+                    @error('guardian_photo_upload') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
                 <div class="col-md-4">
                     <div class="input-group input-group-outline">
@@ -327,14 +360,14 @@
                 </div>
                 <div class="col-md-4">
                     <div class="input-group input-group-outline">
-                        <label class="form-label">Password <span class="req">*</span></label>
+                        <label class="form-label">Password</label>
                         <input type="password" wire:model="guardian_password" class="form-control" placeholder=" " onfocus="focused(this)" onfocusout="defocused(this)">
                         @error('guardian_password') <span class="text-danger">{{ $message }}</span> @enderror
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="input-group input-group-outline">
-                    <label class="form-label">Retype Password <span class="req">*</span></label>
+                    <label class="form-label">Retype Password</label>
                     <input type="password" wire:model="guardian_password_confirmation" class="form-control" placeholder=" " onfocus="focused(this)" onfocusout="defocused(this)">
                     @error('guardian_password_confirmation') <span class="text-danger">{{ $message }}</span> @enderror
                     </div>
@@ -373,27 +406,102 @@
         </div>
 
         <!-- Form Footer -->
-
         <div class="form-footer">
-            <button class="btn-outline" type="button" wire:click="resetForm">
-                <span class="material-icons-round" style="font-size:16px">refresh</span> Reset
+            <button type="button" class="btn-outline" onclick="history.back()">
+                <span class="material-icons-round" style="font-size:16px">arrow_back</span>
+                Back
             </button>
 
-            <button class="btn-pink" type="button" wire:click="save" wire:loading.attr="disabled" wire:target="save">
-                <span wire:loading.remove wire:target="save">
-                    <span class="material-icons-round">save</span> Save
+            <button class="btn-pink" type="button" wire:click="update" wire:loading.attr="disabled" wire:target="update">
+                <span wire:loading.remove wire:target="update" style="display: inline-flex;align-items: center;gap: 6px">
+                    <span class="material-icons-round">update</span> Update
                 </span>
 
-                <span wire:loading wire:target="save">
+                <span wire:loading wire:target="update">
                     <span class="material-icons-round" style="font-size:16px;animation:spin .7s linear infinite">sync</span>
                     Saving...
                 </span>
             </button>
         </div>
 
-
     </div>
 
-    @push('scripts')
-        {{-- <script src="\assets\js\datepicker.js"></script> --}}
-    @endpush
+@push('scripts')
+    <script>
+        document.addEventListener('livewire:initialized', () => {
+
+            setTimeout(() => initAllFields(), 100);
+
+            Livewire.hook('morph.updated', ({ el }) => {
+                setTimeout(() => initAllFields(), 0);
+            });
+
+            function initAllFields() {
+
+                // ── 1. Text/Textarea/Number is-filled ──
+                document.querySelectorAll('.input-group-outline input, .input-group-outline textarea').forEach(function(input) {
+                    var group = input.closest('.input-group');
+                    if (!group) return;
+                    if (input.value && input.value.trim() !== '') {
+                        group.classList.add('is-filled');
+                    } else {
+                        group.classList.remove('is-filled');
+                    }
+                    if (input._materialInit) return;
+                    input._materialInit = true;
+                    input.addEventListener('focus', function() { group.classList.add('is-focused'); });
+                    input.addEventListener('blur', function() {
+                        group.classList.remove('is-focused');
+                        group.classList.toggle('is-filled', !!input.value.trim());
+                    });
+                    input.addEventListener('input', function() {
+                        group.classList.toggle('is-filled', !!input.value.trim());
+                    });
+                });
+
+                // ── 2. Select is-filled ──
+                document.querySelectorAll('.input-group-outline select').forEach(function(select) {
+                    var group = select.closest('.input-group');
+                    if (!group) return;
+                    if (select.value && select.value !== '') {
+                        group.classList.add('is-filled');
+                    } else {
+                        group.classList.remove('is-filled');
+                    }
+                    if (select._materialInit) return;
+                    select._materialInit = true;
+                    select.addEventListener('change', function() {
+                        group.classList.toggle('is-filled', !!select.value);
+                    });
+                    select.addEventListener('focus', function() { group.classList.add('is-focused'); });
+                    select.addEventListener('blur', function() { group.classList.remove('is-focused'); });
+                });
+
+                // ── 3. Custom Select rebuild ──
+                document.querySelectorAll('.input-group-outline .form-select').forEach(function(select) {
+                    var old = select.parentNode.querySelector('.custom-select-wrapper');
+                    if (old) old.remove();
+                    select.style.display = '';
+                    if (typeof buildCustomSelect === 'function') {
+                        buildCustomSelect(select);
+                    }
+                });
+
+                // ── 4. Datepicker ──
+                Livewire.on('date-updated', function (event) {
+                    var input = document.querySelector('.input-group-outline input[type="date"]');
+                    if (!input) return;
+                    var newDate = event.date || '';
+                    if (newDate) {
+                        input.value = newDate;
+                        input.dataset.dpValue = newDate;
+                        if (input._dpTriggerSync) {
+                            input._dpTriggerSync(newDate);
+                        }
+                    }
+                });
+            }
+
+        });
+    </script>
+@endpush

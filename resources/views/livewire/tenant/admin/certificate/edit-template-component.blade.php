@@ -11,13 +11,6 @@
         <p>Update existing certificate layout</p>
     </div>
 
-    @if (session()->has('success'))
-        <div class="alert alert-success mx-4 mt-3" role="alert">
-            <span class="material-icons-round" style="font-size:16px;vertical-align:middle;margin-right:4px">check_circle</span>
-            {{ session('success') }}
-        </div>
-    @endif
-
     <!-- ══ BASIC INFO ══ -->
     <div class="form-section">
         <div class="section-title mb-2">Basic Information</div>
@@ -167,8 +160,10 @@
             <div class="col-12">
                 <label style="font-size:.73rem;font-weight:600;color:var(--muted);display:block;margin-bottom:8px">
                     Content Body <span class="req">*</span>
-                    <span style="font-weight:400;margin-left:8px;color:#bbb">
-                        — Use placeholders like <code>{name}</code>, <code>{roll_no}</code>, <code>{class}</code>, <code>{institute_name}</code>
+                    <span style="font-weight:600;margin-left:8px;color:#bbb">
+                        — Use placeholders like <code>{institute_name}<c/ode>, <code>{institute_email}</code>,<code>{institute_mobile}</code><code>{institute_address}</code> 
+                        <code>{register_no}</code>,<code>{student_photo}</code>,<code>{admission_date}</code>,
+                        <code>{name}</code>,<code>{gender}</code>,<code>{roll}</code>,<code>{class}</code>, <code>{category}</code>, <code>{birthday}</code>
                     </span>
                 </label>
                 <div wire:ignore>
@@ -184,122 +179,120 @@
         <div class="section-title mb-2">Images</div>
         <div class="row g-4">
 
-            {{-- ── LOGO IMAGE ── --}}
-            <div class="col-md-4">
-                <label class="upload-label">School Logo</label>
+            <!-- ══ IMAGES ══ -->
+            <div class="form-section">
+                <div class="section-title mb-2">Images</div>
+                <div class="row g-4">
 
-                {{-- Existing image --}}
-                @if($existing_logo_image)
-                    <div class="existing-image-preview">
-                        <img src="{{ asset('storage/' . $existing_logo_image) }}" class="preview-img" alt="Logo">
-                        <div class="d-flex gap-2 mt-2">
-                            <button type="button" wire:click="removeImage('logo_image')" class="btn-remove-image">
-                                <span class="material-icons-round" style="font-size:14px">delete</span> Remove
-                            </button>
-                        </div>
-                    </div>
-                @else
-                    {{-- Upload box --}}
-                    <div class="photo-upload-box" onclick="document.getElementById('logoUpload').click()">
-                        <span class="material-icons-round">corporate_fare</span>
-                        <span class="lbl">Click to upload logo</span>
-                        <small>JPG, PNG, WebP up to 2MB</small>
-                    </div>
-                    {{-- BUG FIX: input is OUTSIDE wire:ignore, NOT inside onclick div --}}
-                    <input type="file"
-                           id="logoUpload"
-                           wire:model="logo_image"
-                           accept="image/*"
-                           style="display:none">
-
-                    {{-- Preview before save --}}
-                    @if($logo_image && !$errors->has('logo_image') && is_object($logo_image) && method_exists($logo_image, 'getClientOriginalExtension') && in_array(strtolower($logo_image->getClientOriginalExtension()), ['jpg','jpeg','png','gif','webp']))
-                        @php try { $logoUrl = $logo_image->temporaryUrl(); } catch(\Throwable $e) { $logoUrl = null; } @endphp
-                        @if($logoUrl)
-                        <div class="new-upload-preview mt-2">
-                            <img src="{{ $logoUrl }}" class="preview-img" alt="Logo preview">
-                            <span class="preview-badge">New — not saved yet</span>
-                        </div>
+                    {{-- ── LOGO IMAGE ── --}}
+                    <div class="col-md-4">
+                        <label class="upload-label">School Logo</label>
+                        @if($existing_logo_image)
+                            <div class="existing-image-preview">
+                                <img src="{{ asset($existing_logo_image) }}" class="preview-img" alt="Logo">
+                                <div class="d-flex gap-2 mt-2">
+                                    <button type="button" wire:click="removeImage('logo_image')" class="btn-remove-image">
+                                        <span class="material-icons-round" style="font-size:14px">delete</span> Remove
+                                    </button>
+                                </div>
+                            </div>
+                        @else
+                            <div class="photo-upload-box" onclick="document.getElementById('logoUpload').click()">
+                                <span class="material-icons-round">corporate_fare</span>
+                                <span class="lbl">Click to upload logo</span>
+                                <small>JPG, PNG up to 2MB</small>
+                            </div>
+                            <input type="file" id="logoUpload" wire:model="logo_image" accept="image/*" style="display:none">
+                            @if($logo_image)
+                                @if($this->safePreviewUrl($logo_image))
+                                    <div class="new-upload-preview mt-2">
+                                        <img src="{{ $this->safePreviewUrl($logo_image) }}" class="preview-img" alt="Logo preview">
+                                        <span class="preview-badge">New — not saved yet</span>
+                                    </div>
+                                @else
+                                    <div class="new-upload-preview mt-2">
+                                        <span class="material-icons-round">check_circle</span>
+                                        <span class="preview-badge">File selected</span>
+                                    </div>
+                                @endif
+                            @endif
                         @endif
-                    @endif
-                @endif
-                @error('logo_image') <span class="text-danger d-block mt-1">{{ $message }}</span> @enderror
-            </div>
-
-            {{-- ── SIGNATURE IMAGE ── --}}
-            <div class="col-md-4">
-                <label class="upload-label">Signature</label>
-
-                @if($existing_signature_image)
-                    <div class="existing-image-preview">
-                        <img src="{{ asset('storage/' . $existing_signature_image) }}" class="preview-img" alt="Signature">
-                        <div class="d-flex gap-2 mt-2">
-                            <button type="button" wire:click="removeImage('signature_image')" class="btn-remove-image">
-                                <span class="material-icons-round" style="font-size:14px">delete</span> Remove
-                            </button>
-                        </div>
+                        @error('logo_image') <span class="text-danger d-block mt-1">{{ $message }}</span> @enderror
                     </div>
-                @else
-                    <div class="photo-upload-box" onclick="document.getElementById('signatureUpload').click()">
-                        <span class="material-icons-round">draw</span>
-                        <span class="lbl">Click to upload signature</span>
-                        <small>JPG, PNG, WebP up to 2MB</small>
-                    </div>
-                    <input type="file"
-                           id="signatureUpload"
-                           wire:model="signature_image"
-                           accept="image/*"
-                           style="display:none">
 
-                    @if($signature_image && !$errors->has('signature_image') && is_object($signature_image) && method_exists($signature_image, 'getClientOriginalExtension') && in_array(strtolower($signature_image->getClientOriginalExtension()), ['jpg','jpeg','png','gif','webp']))
-                        @php try { $sigUrl = $signature_image->temporaryUrl(); } catch(\Throwable $e) { $sigUrl = null; } @endphp
-                        @if($sigUrl)
-                        <div class="new-upload-preview mt-2">
-                            <img src="{{ $sigUrl }}" class="preview-img" alt="Signature preview">
-                            <span class="preview-badge">New — not saved yet</span>
-                        </div>
+                    {{-- ── SIGNATURE IMAGE ── --}}
+                    <div class="col-md-4">
+                        <label class="upload-label">Signature</label>
+                        @if($existing_signature_image)
+                            <div class="existing-image-preview">
+                                <img src="{{ asset($existing_signature_image) }}" class="preview-img" alt="Signature">
+                                <div class="d-flex gap-2 mt-2">
+                                    <button type="button" wire:click="removeImage('signature_image')" class="btn-remove-image">
+                                        <span class="material-icons-round" style="font-size:14px">delete</span> Remove
+                                    </button>
+                                </div>
+                            </div>
+                        @else
+                            <div class="photo-upload-box" onclick="document.getElementById('signatureUpload').click()">
+                                <span class="material-icons-round">draw</span>
+                                <span class="lbl">Click to upload signature</span>
+                                <small>JPG, PNG up to 2MB</small>
+                            </div>
+                            <input type="file" id="signatureUpload" wire:model="signature_image" accept="image/*" style="display:none">
+                            @if($signature_image)
+                                @if($this->safePreviewUrl($signature_image))
+                                    <div class="new-upload-preview mt-2">
+                                        <img src="{{ $this->safePreviewUrl($signature_image) }}" class="preview-img" alt="Signature preview">
+                                        <span class="preview-badge">New — not saved yet</span>
+                                    </div>
+                                @else
+                                    <div class="new-upload-preview mt-2">
+                                        <span class="material-icons-round">check_circle</span>
+                                        <span class="preview-badge">File selected</span>
+                                    </div>
+                                @endif
+                            @endif
                         @endif
-                    @endif
-                @endif
-                @error('signature_image') <span class="text-danger d-block mt-1">{{ $message }}</span> @enderror
-            </div>
-
-            {{-- ── BACKGROUND IMAGE ── --}}
-            <div class="col-md-4">
-                <label class="upload-label">Background</label>
-
-                @if($existing_background_image)
-                    <div class="existing-image-preview">
-                        <img src="{{ asset('storage/' . $existing_background_image) }}" class="preview-img" alt="Background">
-                        <div class="d-flex gap-2 mt-2">
-                            <button type="button" wire:click="removeImage('background_image')" class="btn-remove-image">
-                                <span class="material-icons-round" style="font-size:14px">delete</span> Remove
-                            </button>
-                        </div>
+                        @error('signature_image') <span class="text-danger d-block mt-1">{{ $message }}</span> @enderror
                     </div>
-                @else
-                    <div class="photo-upload-box" onclick="document.getElementById('backgroundUpload').click()">
-                        <span class="material-icons-round">wallpaper</span>
-                        <span class="lbl">Click to upload background</span>
-                        <small>JPG, PNG, WebP up to 2MB</small>
-                    </div>
-                    <input type="file"
-                           id="backgroundUpload"
-                           wire:model="background_image"
-                           accept="image/*"
-                           style="display:none">
 
-                    @if($background_image && !$errors->has('background_image') && is_object($background_image) && method_exists($background_image, 'getClientOriginalExtension') && in_array(strtolower($background_image->getClientOriginalExtension()), ['jpg','jpeg','png','gif','webp']))
-                        @php try { $bgUrl = $background_image->temporaryUrl(); } catch(\Throwable $e) { $bgUrl = null; } @endphp
-                        @if($bgUrl)
-                        <div class="new-upload-preview mt-2">
-                            <img src="{{ $bgUrl }}" class="preview-img" alt="Background preview">
-                            <span class="preview-badge">New — not saved yet</span>
-                        </div>
+                    {{-- ── BACKGROUND IMAGE ── --}}
+                    <div class="col-md-4">
+                        <label class="upload-label">Background</label>
+                        @if($existing_background_image)
+                            <div class="existing-image-preview">
+                                <img src="{{ asset($existing_background_image) }}" class="preview-img" alt="Background">
+                                <div class="d-flex gap-2 mt-2">
+                                    <button type="button" wire:click="removeImage('background_image')" class="btn-remove-image">
+                                        <span class="material-icons-round" style="font-size:14px">delete</span> Remove
+                                    </button>
+                                </div>
+                            </div>
+                        @else
+                            <div class="photo-upload-box" onclick="document.getElementById('backgroundUpload').click()">
+                                <span class="material-icons-round">wallpaper</span>
+                                <span class="lbl">Click to upload background</span>
+                                <small>JPG, PNG up to 2MB</small>
+                            </div>
+                            <input type="file" id="backgroundUpload" wire:model="background_image" accept="image/*" style="display:none">
+                            @if($background_image)
+                                @if($this->safePreviewUrl($background_image))
+                                    <div class="new-upload-preview mt-2">
+                                        <img src="{{ $this->safePreviewUrl($background_image) }}" class="preview-img" alt="Background preview">
+                                        <span class="preview-badge">New — not saved yet</span>
+                                    </div>
+                                @else
+                                    <div class="new-upload-preview mt-2">
+                                        <span class="material-icons-round">check_circle</span>
+                                        <span class="preview-badge">File selected</span>
+                                    </div>
+                                @endif
+                            @endif
                         @endif
-                    @endif
-                @endif
-                @error('background_image') <span class="text-danger d-block mt-1">{{ $message }}</span> @enderror
+                        @error('background_image') <span class="text-danger d-block mt-1">{{ $message }}</span> @enderror
+                    </div>
+
+                </div>
             </div>
 
         </div>
@@ -508,7 +501,7 @@
             setTimeout(() => initAllFields(), 100);
 
             Livewire.hook('morph.updated', ({ el }) => {
-                setTimeout(() => initAllFields(), 0);
+                setTimeout(() => initAllFields(), 1);
             });
 
             function initAllFields() {

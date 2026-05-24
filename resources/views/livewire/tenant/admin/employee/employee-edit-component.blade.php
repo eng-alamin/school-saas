@@ -36,7 +36,7 @@
             <div class="col-md-6">
                 <div class="input-group input-group-outline" wire:ignore>
                     <label class="form-label">Joining Date <span class="req">*</span></label>
-                    <input type="date" wire:model="joining_date" class="form-control">
+                    <input type="date" wire:model="joining_date" data-dp-value="{{ $joining_date }}" class="form-control">
                 </div>
                 @error('joining_date') <span class="text-danger">{{ $message }}</span> @enderror
             </div>
@@ -111,7 +111,7 @@
             <div class="col-md-6">
                 <div class="input-group input-group-outline" wire:ignore>
                     <label class="form-label">Date Of Birth</label>
-                    <input type="date" wire:model="dob" class="form-control">
+                    <input type="date" wire:model="dob" data-dp-value="{{ $dob }}" class="form-control">
                 </div>
                 @error('dob') <span class="text-danger">{{ $message }}</span> @enderror
             </div>
@@ -162,19 +162,30 @@
                 @error('permanent_address') <span class="text-danger">{{ $message }}</span> @enderror
             </div>
 
-            <div class="col-12">
+            <div class="col-md-12">
                 <label style="font-size:.73rem;font-weight:600;color:var(--muted);display:block;margin-bottom:8px">
-                    Profile Picture
+                    Photo
                 </label>
-
-                <div class="photo-upload-box" id="employeePhotoBox">
-                    <span class="material-icons-round">person</span>
-                    <span class="lbl">Click to upload employee photo</span>
-                    <small style="color:#bbb;font-size:.7rem">JPG, PNG up to 2MB</small>
-                    <input type="file" wire:model="photo" accept="image/*">
+                <div class="photo-upload-box">
+                    @if($photo_upload)
+                        @if($this->safePreviewUrl($photo_upload))
+                            <img src="{{ $this->safePreviewUrl($photo_upload) }}" alt="Preview"
+                                style="max-height:80px;max-width:100%;object-fit:contain;margin-bottom:6px">
+                        @else
+                            <span class="material-icons-round">check_circle</span>
+                            <span class="lbl">File selected</span>
+                        @endif
+                    @elseif($photo)
+                        <img src="{{ asset($photo) }}" alt="Photo"
+                            style="max-height:80px;max-width:100%;object-fit:contain;margin-bottom:6px">
+                    @else
+                        <span class="material-icons-round">image</span>
+                        <span class="lbl">Click to upload</span>
+                    @endif
+                    <small style="color:#bbb;font-size:.7rem">PNG, JPG up to 2MB</small>
+                    <input type="file" wire:model="photo_upload" accept="image/*">
                 </div>
-
-                @error('photo') <span class="text-danger">{{ $message }}</span> @enderror
+                @error('photo_upload') <span class="text-danger">{{ $message }}</span> @enderror
             </div>
         </div>
     </div>
@@ -196,7 +207,7 @@
 
             <div class="col-md-6">
                 <div class="input-group input-group-outline">
-                    <label class="form-label">Password <span class="req">*</span></label>
+                    <label class="form-label">Password </label>
                     <input type="password" wire:model="password" class="form-control" placeholder=" " onfocus="focused(this)" onfocusout="defocused(this)">
                 </div>
                 @error('password') <span class="text-danger">{{ $message }}</span> @enderror
@@ -263,13 +274,13 @@
 
     <!-- FORM FOOTER -->
     <div class="form-footer">
-        <a href="{{route('admin.employee.list')}}" class="btn-outline" type="button">
-            <span class="material-icons-round" style="font-size:16px">refresh</span>
-            Return
-        </a>
+        <button type="button" class="btn-outline" onclick="history.back()">
+            <span class="material-icons-round" style="font-size:16px">arrow_back</span>
+            Back
+        </button>
 
         <button class="btn-pink" type="button" wire:click="update" wire:loading.attr="disabled" wire:target="update">
-            <span wire:loading.remove wire:target="update">
+            <span wire:loading.remove wire:target="update" style="display: inline-flex;align-items: center;gap: 6px">
                 <span class="material-icons-round">save</span>
                 Update
             </span>

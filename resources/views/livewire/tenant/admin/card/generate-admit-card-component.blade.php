@@ -154,7 +154,7 @@
                                 <td>
                                     <div class="d-flex align-items-center gap-2">
                                         @if($student->logo_path)
-                                            <img src="{{ asset('storage/'.$student->logo_path) }}" class="avatar" alt="">
+                                            <img src="{{ asset($student->logo_path) }}" class="avatar" alt="">
                                         @else
                                             <div class="avatar-placeholder">{{ strtoupper(substr($student->name, 0, 1)) }}</div>
                                         @endif
@@ -255,7 +255,7 @@
                                 gap:14px;
                             ">
                                 @if($tmpl?->logo_path)
-                                    <img src="{{ asset('storage/'.$tmpl->logo_path) }}"
+                                    <img src="{{ asset($tmpl->logo_path) }}"
                                         style="height:44px;border-radius:6px;background:#fff;padding:2px;">
                                 @else
                                     <div style="
@@ -291,7 +291,7 @@
                                         gap:4px;background:rgba(0,0,0,.03);
                                     ">
                                         @if(!empty($card['photo']))
-                                            <img src="{{ asset('storage/'.$card['photo']) }}"
+                                            <img src="{{ asset($card['photo']) }}"
                                                 style="width:100%;height:100%;object-fit:cover;">
                                         @else
                                             <i class="bi bi-person" style="font-size:1.8rem;color:{{ $accentColor }};opacity:.4;"></i>
@@ -518,7 +518,7 @@
                     gap: 14px;
                 ">
                     @if($tmpl?->logo_path)
-                        <img src="{{ asset('storage/'.$tmpl->logo_path) }}"
+                        <img src="{{ asset($tmpl->logo_path) }}"
                             style="height:44px;border-radius:6px;background:#fff;padding:2px;">
                     @else
                         <div style="
@@ -554,7 +554,7 @@
                             gap:4px;background:rgba(0,0,0,.03);
                         ">
                             @if(!empty($card['photo']))
-                                <img src="{{ asset('storage/'.$card['photo']) }}"
+                                <img src="{{ asset($card['photo']) }}"
                                     style="width:100%;height:100%;object-fit:cover;">
                             @else
                                 <i class="bi bi-person" style="font-size:1.8rem;color:{{ $accentColor }};opacity:.4;"></i>

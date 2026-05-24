@@ -4,6 +4,11 @@ namespace App\Providers;
 use Livewire\Livewire;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+    
+use Stancl\Tenancy\Events\TenancyInitialized;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Event;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -39,5 +44,18 @@ class AppServiceProvider extends ServiceProvider
                     ]);
             });
         }
+
+        // TenancyInitialized event-এ symlink তৈরি করুন
+        Event::listen(TenancyInitialized::class, function ($event) {
+            $tenantId = $event->tenancy->tenant->id;
+            
+            $target = storage_path('app/public'); // tenancy override করার পরের path
+            $link = public_path('storage/tenant' . $tenantId); // বা শুধু public_path('storage')
+            
+            if (!File::exists(public_path('storage'))) {
+                File::link($target, public_path('storage'));
+            }
+        });
+
     }
 }

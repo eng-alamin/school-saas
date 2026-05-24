@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\AcademicClassSchedule;
 use App\Models\AcademicClass;
 use App\Models\AcademicSubject;
+use App\Models\Employee;
 
 class ClassScheduleCreateComponent extends Component
 {
@@ -125,10 +126,17 @@ class ClassScheduleCreateComponent extends Component
     {
         $classes  = AcademicClass::orderBy('id')->get();
         $subjects = AcademicSubject::orderBy('name')->get();
+        $teachers = Employee::with(['designation', 'department', 'user'])
+            ->whereHas('user', function ($q) {
+                $q->where('role', 'teacher');
+            })
+            ->orderBy('id', 'asc')
+            ->get();
 
         return view('livewire.tenant.admin.academic.class-schedule-create-component')
             ->with('classes', $classes)
             ->with('subjects', $subjects)
+            ->with('teachers', $teachers)
             ->layout('layouts.tenant.app', [
                 'title' => "Class Schedule | School SaaS",
             ]);

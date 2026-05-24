@@ -18,6 +18,11 @@ class Employee extends Model
         return $this->belongsTo(Designation::class);
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
     public function attendances()
     {
         return $this->morphMany(Attendance::class, 'attendable');

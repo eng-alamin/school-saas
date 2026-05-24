@@ -5,8 +5,8 @@ namespace App\Services\Tenant;
 use App\Models\Tenant;
 use App\Models\Domain;
 use App\Models\User;
+use App\Models\SettingSchool;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Stancl\Tenancy\Jobs\MigrateDatabase;
 
 class TenantProvisioningService
@@ -61,7 +61,19 @@ class TenantProvisioningService
             User::create([
                 'name' => $data['admin_name'],
                 'email' => $data['admin_email'],
-                'password' => Hash::make($data['password']),
+                'password' => $data['password'],
+            ]);
+
+            /*
+            |--------------------------------------------------------------------------
+            | Create Setting School
+            |--------------------------------------------------------------------------
+            */
+
+            SettingSchool::create([
+                'name' => $data['school_name'],
+                'phone' => $data['phone'],
+                'email' => $data['email'],
             ]);
 
             /*
@@ -98,6 +110,10 @@ class TenantProvisioningService
         \App\Models\AcademicSession::create([
             'name' => '2026',
             'is_current' => true,
+        ]);
+        \App\Models\AcademicSession::create([
+            'name' => '2027',
+            'is_current' => false,
         ]);
 
         /*

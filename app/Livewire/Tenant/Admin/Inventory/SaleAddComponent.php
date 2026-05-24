@@ -251,8 +251,8 @@ class SaleAddComponent extends Component
         if ($this->role === 'student') {
             $saleables = Student::query()
                 ->when($this->class_id, fn($q) => $q->where('class_id', $this->class_id))
-                ->orderBy('full_name')
-                ->get(['id', 'full_name']);
+                ->orderBy('name')
+                ->get(['id', 'name']);
         } elseif ($this->role === 'employee') {
             $saleables = Employee::orderBy('name')->get(['id', 'name']);
         }

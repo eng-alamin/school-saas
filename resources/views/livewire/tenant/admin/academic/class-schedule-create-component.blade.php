@@ -86,11 +86,10 @@
                             <div wire:ignore class="input-group input-group-outline">
                                 <label class="form-label">Teacher <span class="req">*</span></label>
                                 <select wire:model="data.{{ $index }}.teacher" class="form-select">
-                                    <option value="">Select</option>
-                                    <option value="Rohim">Rohim</option>
-                                    <option value="Karim">Karim</option>
-                                    <option value="Ahmed">Ahmed</option>
-                                    <option value="Islam">Islam</option>
+                                    <option value="">Select Teacher</option>
+                                    @foreach ($teachers as $t)
+                                        <option value="{{ $t->id }}">{{ $t->name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                             @error('data.'.$index.'.teacher') <span class="text-danger">{{ $message }}</span> @enderror

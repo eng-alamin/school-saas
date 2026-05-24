@@ -172,13 +172,14 @@ class TenantRegistrationWizard extends Component
             'subdomain' => $this->subdomain,
             'admin_name' => $this->admin_name,
             'admin_email' => $this->admin_email,
-            'password' => Hash::make($this->password),
+            'password' => $this->password,
         ]);
 
         session()->flash('success', 'Tenant Created Successfully');
 
         return redirect()->to(
-            'https://' . $this->subdomain . '.school-saas.test/login'
+            $this->subdomain . '.school-saas.test/login'
+            // 'https://' . $this->subdomain . '.school-saas.test/login'
         );
     }
 

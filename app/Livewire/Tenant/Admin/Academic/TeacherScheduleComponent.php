@@ -88,7 +88,12 @@ class TeacherScheduleComponent extends Component
 
     public function render()
     {
-        $teachers = Employee::where('role', 'teacher')->orderBy('name')->get();
+        $teachers = Employee::with(['designation', 'department', 'user'])
+            ->whereHas('user', function ($q) {
+                $q->where('role', 'teacher');
+            })
+            ->orderBy('id', 'asc')
+            ->get();
 
         return view('livewire.tenant.admin.academic.teacher-schedule-component')
             ->with('teachers', $teachers)

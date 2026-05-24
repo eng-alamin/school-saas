@@ -5,7 +5,6 @@ namespace App\Livewire\Tenant\Auth;
 use Livewire\Component;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 
 class LoginComponent extends Component
 {
@@ -28,28 +27,23 @@ class LoginComponent extends Component
         ];
     }
 
-    public function mount()
-    {
-        if (Auth::check()) {
-            return redirect('/dashboard');
-        } 
-    }
-
     public function login()
     {
         $this->validate();
 
-        $user = User::where('email', $this->email)->first();
+        if (!Auth::attempt([
+            'email' => $this->email,
+            'password' => $this->password,
+        ], $this->remember)) {
 
-        if (! $user || ! Hash::check($this->password, $user->password)) {
-            $this->password = '';
+            $this->reset('password');
+
             $this->addError('email', 'These credentials do not match our records.');
+
             return;
         }
 
-        Auth::login($user, $this->remember);
-
-        session()->regenerate();
+        request()->session()->regenerate();
 
         $this->redirect(route('tenant.dashboard', ['tenant' => tenant('id')]), navigate: true);
     }

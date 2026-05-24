@@ -3,13 +3,17 @@
 namespace App\Livewire\Tenant\Admin\Parent;
 
 use Livewire\Component;
+use App\Models\User;
 use App\Models\Guardian;
-use Livewire\WithFileUploads;
+
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rule;
+use Livewire\WithFileUploads;
 
 class ParentAddComponent extends Component
 {
+    use WithFileUploads;
+
     public $name;
     public $relation;
     public $father_name;
@@ -20,16 +24,30 @@ class ParentAddComponent extends Component
     public $mobile;
     public $email;
     public $address;
-    public $photo;
+    public $photo_upload;
+
     public $username;
     public $password;
+    public $password_confirmation;
 
-    public function render()
+    public function rules()
     {
-        return view('livewire.tenant.admin.parent.parent-add-component')
-            ->layout('layouts.tenant.app', [
-                'title' => "Create Parent | Monarchy School",
-            ]);
+        return [
+            'name' => 'required',
+            'relation' => 'nullable|string|max:50',
+            'father_name' => 'nullable|string|max:255',
+            'mother_name' => 'nullable|string|max:255',
+            'occupation' => 'nullable|string|max:255',
+            'income' => 'nullable|numeric',
+            'education' => 'nullable|string|max:255',
+            'mobile' => 'required|string|max:20',
+            'email' => 'nullable|email',
+
+            'photo_upload'       => 'nullable',
+
+            'username' => 'required|unique:users,username',
+            'password' => 'nullable|confirmed|min:4',
+        ];
     }
 
     public function resetForm()
@@ -42,36 +60,47 @@ class ParentAddComponent extends Component
         $this->dispatch('validation-failed');
     }
 
-    public function rules()
-    {
-        return [
-            'name' => 'required',
-            'relation' => 'nullable|string|max:50',
-            'father_name' => 'nullable|string|max:255',
-            'mother_name' => 'nullable|string|max:255',
-            'occupation' => 'nullable|string|max:255',
-            'income' => 'nullable|numeric',
-            'education' => 'nullable|string|max:255',
-            'mobile' => 'nullable|string|max:20',
-            'email' => 'nullable|email',
-            'username' => 'required|unique:guardians,username',
-            'password' => 'required|min:4',
-        ];
-    }
-
     public function updated($propertyName)
     {
         $this->validateOnly($propertyName, $this->rules());
     }
 
+    public function safePreviewUrl($upload): ?string
+    {
+        if (!$upload) return null;
+        try {
+            return $upload->temporaryUrl();
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+
     public function save()
     {
         try {
-            $data = $this->validate($this->rules());
+            $this->validate($this->rules());
 
-            $photoPath = $this->photo?->store('parents', 'public');
+            $userPassword = !empty($this->password)
+                ? $this->password
+                : '1234';
+
+            $userData = [
+                'role'     => 'parent',
+                'name'     => $this->name,
+                'username' => $this->username,
+                'email'    => $this->email,
+                'password' => $userPassword,
+            ];
+
+            $user = User::create($userData);
+
+            // Upload photo
+            $photoPath = $this->photo_upload 
+            ? \App\Helpers\TenantFileHelper::store($this->photo_upload, 'guardians') 
+            : null;
 
             Guardian::create([
+                'user_id'     => $user->id,
                 'name' => $this->name,
                 'relation' => $this->relation,
                 'father_name' => $this->father_name,
@@ -83,18 +112,23 @@ class ParentAddComponent extends Component
                 'email' => $this->email,
                 'address' => $this->address,
                 'photo' => $photoPath,
-
-                // Login Details
-                'username' => $this->username,
-                'password' => bcrypt($this->password),
             ]);
 
             $this->dispatch('toast', type: 'success', message: 'Parent created successfully!');
             $this->resetForm();
         } catch (\Exception $e) {
+            $this->dispatch('validation-failed');
             $this->dispatch('toast', type: 'error', message: 'An error occurred while creating the parent.');
             throw $e;
         }
+    }
+
+    public function render()
+    {
+        return view('livewire.tenant.admin.parent.parent-add-component')
+            ->layout('layouts.tenant.app', [
+                'title' => "Create Parent | Monarchy School",
+            ]);
     }
 
 }

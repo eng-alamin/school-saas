@@ -49,9 +49,9 @@ class AddTemplateComponent extends Component
             'margin_bottom'       => 'required|integer|min:0|max:300',
             'margin_left'         => 'required|integer|min:0|max:300',
             'certificate_content' => 'required|string',
-            'signature_image'     => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'logo_image'          => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            // 'background_image'    => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'signature_image'     => 'nullable',
+            'logo_image'          => 'nullable',
+            'background_image'    => 'nullable',
         ];
     }
 
@@ -61,6 +61,29 @@ class AddTemplateComponent extends Component
         'page_layout.required'         => 'Please select a page layout.',
         'certificate_content.required' => 'Certificate content cannot be empty.',
     ];
+
+    public function safePreviewUrl($upload): ?string
+    {
+        if (!$upload) return null;
+        try {
+            return $upload->temporaryUrl();
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+
+    private function deleteOldFile($path): void
+    {
+        if (!$path) {
+            return;
+        }
+
+        $fullPath = public_path($path);
+
+        if (file_exists($fullPath)) {
+            unlink($fullPath);
+        }
+    }
 
     // ── Save ──
     public function save(): void
@@ -85,30 +108,14 @@ class AddTemplateComponent extends Component
 
         // Handle file uploads
         foreach (['signature_image', 'logo_image', 'background_image'] as $field) {
-
-            if (
-                isset($this->$field) &&
-                $this->$field instanceof TemporaryUploadedFile
-            ) {
-
-                $filename = uniqid() . '.' . $this->$field->getClientOriginalExtension();
-
-                $data[$field] = $this->$field->storeAs(
-                    'certificates',
-                    $filename,
-                    'public'
-                );
+            if ($this->$field) {
+                $data[$field] = \App\Helpers\TenantFileHelper::store($this->$field, 'certificates');
             }
         }
-        // foreach (['signature_image', 'logo_image', 'background_image'] as $field) {
-        //     if ($this->$field) {
-        //         $data[$field] = $this->$field->store('certificates', 'public');
-        //     }
-        // }
 
         CertificateTemplate::create($data);
 
-        session()->flash('success', 'Certificate template created successfully!');
+        $this->dispatch('toast', type: 'success', message: 'Certificate template created successfully!');
         $this->resetForm();
     }
 

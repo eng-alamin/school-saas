@@ -23,7 +23,7 @@
             </div>
             <div class="col-md-6">
                 <div class="input-group input-group-outline">
-                    <label class="form-label">Relation <span class="req">*</span></label>
+                    <label class="form-label">Relation</label>
                     <input type="text" wire:model="relation" class="form-control" placeholder=" " onfocus="focused(this)" onfocusout="defocused(this)">
                     @error('relation') <span class="text-danger">{{ $message }}</span> @enderror     
                 </div>
@@ -43,7 +43,7 @@
             </div>
             <div class="col-md-4">
                 <div class="input-group input-group-outline">
-                    <label class="form-label">Occupation <span class="req">*</span></label>
+                    <label class="form-label">Occupation</label>
                     <input type="text" wire:model="occupation" class="form-control" placeholder=" " onfocus="focused(this)" onfocusout="defocused(this)">
                     @error('occupation') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
@@ -78,18 +78,31 @@
             </div>
             <div class="col-12">
                 <div class="input-group input-group-outline">
-                    <label class="form-label">Address <span class="req">*</span></label>
+                    <label class="form-label">Address</label>
                     <textarea wire:model="address" class="form-control" placeholder=" " onfocus="focused(this)" onfocusout="defocused(this)"></textarea>
                 </div>
             </div>
-            <div class="col-12">
-                <label style="font-size:.73rem;font-weight:600;color:var(--muted);display:block;margin-bottom:8px">Guardian Picture</label>
-                <div class="photo-upload-box" id="guardianPhotoBox">
-                <span class="material-icons-round">person</span>
-                <span class="lbl">Click to upload guardian photo</span>
-                <small style="color:#bbb;font-size:.7rem">JPG, PNG up to 2MB</small>
-                <input type="file" accept="image/*" onchange="previewPhoto(this,'guardianPhotoBox')">
+            <div class="col-md-12">
+                <label style="font-size:.73rem;font-weight:600;color:var(--muted);display:block;margin-bottom:8px">
+                    Photo
+                </label>
+                <div class="photo-upload-box">
+                    @if($photo_upload)
+                        @if($this->safePreviewUrl($photo_upload))
+                            <img src="{{ $this->safePreviewUrl($photo_upload) }}" alt="Preview"
+                                style="max-height:80px;max-width:100%;object-fit:contain;margin-bottom:6px">
+                        @else
+                            <span class="material-icons-round">check_circle</span>
+                            <span class="lbl">File selected</span>
+                        @endif
+                     @else
+                        <span class="material-icons-round">image</span>
+                        <span class="lbl">Click to upload</span>
+                    @endif
+                    <small style="color:#bbb;font-size:.7rem">PNG, JPG up to 2MB</small>
+                    <input type="file" wire:model="photo_upload" accept="image/*">
                 </div>
+                @error('photo_upload') <span class="text-danger">{{ $message }}</span> @enderror
             </div>
         </div>
     </div>
@@ -111,17 +124,16 @@
 
             <div class="col-md-4">
                 <div class="input-group input-group-outline">
-                    <label class="form-label">Password <span class="req">*</span></label>
-                    <input type="password" wire:model="password" class="form-control" placeholder=" " onfocus="focused(this)" onfocusout="defocused(this)">
+                    <label class="form-label">Password</label>
+                    <input type="password" wire:model="password" class="form-control" value="1234" onfocus="focused(this)" onfocusout="defocused(this)">
+                    @error('password') <span class="text-danger">{{ $message }}</span> @enderror     
                 </div>
-                @error('password') <span class="text-danger">{{ $message }}</span> @enderror
             </div>
-
             <div class="col-md-4">
                 <div class="input-group input-group-outline">
-                <label class="form-label">Retype Password <span class="req">*</span></label>
-                <input type="password" wire:model="password_confirmation" class="form-control" placeholder=" " onfocus="focused(this)" onfocusout="defocused(this)">
-                @error('password_confirmation') <span class="text-danger">{{ $message }}</span> @enderror
+                    <label class="form-label">Retype Password</label>
+                    <input type="password" wire:model="password_confirmation" class="form-control" placeholder=" " onfocus="focused(this)" onfocusout="defocused(this)">
+                    @error('password_confirmation') <span class="text-danger">{{ $message }}</span> @enderror     
                 </div>
             </div>
 
@@ -137,7 +149,7 @@
         </button>
 
         <button class="btn-pink" type="button" wire:click="save" wire:loading.attr="disabled" wire:target="save">
-            <span wire:loading.remove wire:target="save">
+            <span wire:loading.remove wire:target="save"  style="display: inline-flex;align-items: center;gap: 6px">
                 <span class="material-icons-round">save</span>
                 Save
             </span>

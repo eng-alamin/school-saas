@@ -19,17 +19,6 @@
 
         <div class="form-section">
             <div class="row g-4">
-
-                <!-- Branch Name -->
-                <div class="col-md-6">
-                    <div class="input-group input-group-outline">
-                        <label class="form-label">Branch Name <span class="req">*</span></label>
-                        <input type="text" wire:model="branch_name" class="form-control"
-                               placeholder=" " onfocus="focused(this)" onfocusout="defocused(this)">
-                    </div>
-                    @error('branch_name') <span class="text-danger">{{ $message }}</span> @enderror
-                </div>
-
                 <!-- School Name -->
                 <div class="col-md-6">
                     <div class="input-group input-group-outline">
@@ -68,16 +57,6 @@
                                placeholder=" " onfocus="focused(this)" onfocusout="defocused(this)">
                     </div>
                     @error('city') <span class="text-danger">{{ $message }}</span> @enderror
-                </div>
-
-                <!-- State -->
-                <div class="col-md-6">
-                    <div class="input-group input-group-outline">
-                        <label class="form-label">State</label>
-                        <input type="text" wire:model="state" class="form-control"
-                               placeholder=" " onfocus="focused(this)" onfocusout="defocused(this)">
-                    </div>
-                    @error('state') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
 
                 <!-- Address -->

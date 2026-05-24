@@ -152,7 +152,7 @@
                                     <td>
                                         <div class="d-flex align-items-center gap-2">
                                             @if($student->photo)
-                                                <img src="{{ asset('storage/' . $student->photo) }}"
+                                                <img src="{{ asset($student->photo) }}"
                                                      class="avatar" alt="">
                                             @else
                                                 <div class="avatar-placeholder">
@@ -244,7 +244,7 @@
 
                                 {{-- Background image --}}
                                 @if($tmpl->background_image)
-                                    <img src="{{ asset('storage/' . $tmpl->background_image) }}"
+                                    <img src="{{ asset($tmpl->background_image) }}"
                                          style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;opacity:.18;">
                                 @endif
 
@@ -256,7 +256,7 @@
 
                                         {{-- Logo --}}
                                         @if($tmpl->logo_image)
-                                            <img src="{{ asset('storage/' . $tmpl->logo_image) }}"
+                                            <img src="{{ asset($tmpl->logo_image) }}"
                                                  style="height:64px;object-fit:contain;">
                                         @else
                                             <div style="width:64px;"></div>
@@ -276,7 +276,7 @@
                                     {{-- Footer: Signature --}}
                                     @if($tmpl->signature_image)
                                         <div style="margin-top:40px;text-align:right;">
-                                            <img src="{{ asset('storage/' . $tmpl->signature_image) }}"
+                                            <img src="{{ asset($tmpl->signature_image) }}"
                                                  style="height:48px;object-fit:contain;">
                                             <div style="font-size:.72rem;color:#888;margin-top:4px;border-top:1px solid #ddd;padding-top:4px;">
                                                 Authorized Signature
@@ -343,14 +343,14 @@
                     position:relative;overflow:hidden;page-break-after:always;">
 
             @if($tmpl->background_image)
-                <img src="{{ asset('storage/' . $tmpl->background_image) }}"
+                <img src="{{ asset($tmpl->background_image) }}"
                      style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;opacity:.18;">
             @endif
 
             <div style="position:relative;z-index:1;">
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
                     @if($tmpl->logo_image)
-                        <img src="{{ asset('storage/' . $tmpl->logo_image) }}" style="height:64px;object-fit:contain;">
+                        <img src="{{ asset($tmpl->logo_image) }}" style="height:64px;object-fit:contain;">
                     @else
                         <div style="width:64px;"></div>
                     @endif
@@ -361,7 +361,7 @@
 
                 @if($tmpl->signature_image)
                     <div style="margin-top:40px;text-align:right;">
-                        <img src="{{ asset('storage/' . $tmpl->signature_image) }}" style="height:48px;object-fit:contain;">
+                        <img src="{{ asset($tmpl->signature_image) }}" style="height:48px;object-fit:contain;">
                         <div style="font-size:.72rem;color:#888;margin-top:4px;border-top:1px solid #ddd;padding-top:4px;">
                             Authorized Signature
                         </div>

@@ -13,10 +13,6 @@ use Stancl\Tenancy\Jobs;
 use Stancl\Tenancy\Listeners;
 use Stancl\Tenancy\Middleware;
 
-use Livewire\Livewire;
-use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
-
-
 class TenancyServiceProvider extends ServiceProvider
 {
     // By default, no namespace is used to support the callable array syntax.
@@ -124,8 +120,13 @@ class TenancyServiceProvider extends ServiceProvider
     {
         $this->app->booted(function () {
             if (file_exists(base_path('routes/tenant.php'))) {
-                Route::namespace(static::$controllerNamespace)
-                    ->group(base_path('routes/tenant.php'));
+                Route::middleware([
+                    'web',
+                    \Stancl\Tenancy\Middleware\InitializeTenancyByDomain::class,
+                    \Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains::class,
+                ])
+                ->namespace(static::$controllerNamespace)
+                ->group(base_path('routes/tenant.php'));
             }
         });
     }

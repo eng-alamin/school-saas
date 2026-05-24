@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('students', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+
             // Academic
             $table->foreignId('session_id')->nullable()->constrained('academic_sessions')->nullOnDelete();
             $table->string('register_no')->unique();
@@ -33,10 +35,6 @@ return new class extends Migration
             $table->text('present_address')->nullable();
             $table->text('permanent_address')->nullable();
             $table->string('photo')->nullable();
-
-            // Login
-            $table->string('username')->unique();
-            $table->string('password');
 
             // Previous School
             $table->text('previous_school')->nullable();

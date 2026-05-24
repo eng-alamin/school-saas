@@ -70,7 +70,6 @@
                     </button>
 
                     {{-- Export CSV --}}
-                    {{-- BUG FIX: wire:click দিয়ে JS call করা হলো যাতে element সবসময় present থাকে --}}
                     <button class="btn-outline" onclick="exportStudentCSV()">
                         <span class="material-icons-round" style="font-size:16px">download</span> Export CSV
                     </button>
@@ -80,7 +79,7 @@
                         <span class="material-icons-round" style="font-size:16px">print</span> Print
                     </button>
 
-                    <a href="{{ route('admin.student.create', ['tenant' => tenant('id')]) }}" class="btn-outline bg-dark text-white">
+                    <a href="{{ route('admin.student.add', ['tenant' => tenant('id')]) }}" class="btn-outline bg-dark text-white">
                         <span class="material-icons-round">add</span> Add Student
                     </a>
                 </div>
@@ -107,7 +106,7 @@
                             <tr>
                                 <td>
                                     <div class="d-flex align-items-center gap-2">
-                                        <img src="{{ $student->photo ? asset('storage/'.$student->photo) : global_asset('assets/img/default-user.jpg') }}"
+                                        <img src="{{ $student->photo ? asset($student->photo) : global_asset('assets/img/default-user.jpg') }}"
                                             style="width:36px;height:36px;border-radius:8px;object-fit:cover;" alt="">
                                         <span class="fw-500">{{ $student->name }}</span>
                                     </div>
@@ -120,7 +119,7 @@
                                 <td>{{ $student->guardians->first()?->name ?? '—' }}</td>
                                 <td class="no-print">
                                     <div class="d-flex gap-1">
-                                        <a href="{{ route('admin.student.overview', ['tenant' => tenant('id'), 'id' => $student->id]) }}"
+                                        <a href="{{ route('admin.student.overview', ['tenant' => tenant('id'), 'id' => $student->id]) }}" target="_blank"
                                             class="act-btn view" title="View">
                                             <span class="material-icons-round">visibility</span>
                                         </a>
@@ -129,7 +128,7 @@
                                             <span class="material-icons-round">drive_file_rename_outline</span>
                                         </a>
                                         <button class="act-btn delete" title="Delete"
-                                            wire:click="confirmDeleteRecord({{ $student->id }})">
+                                            wire:click="confirmDeleteRecord({{ $student->user?->id }})">
                                             <span class="material-icons-round">delete</span>
                                         </button>
                                     </div>

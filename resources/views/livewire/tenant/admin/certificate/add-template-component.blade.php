@@ -11,13 +11,6 @@
         <p>Design a new certificate layout</p>
     </div>
 
-    @if (session()->has('success'))
-        <div class="alert alert-success mx-4 mt-3" role="alert">
-            <span class="material-icons-round" style="font-size:16px;vertical-align:middle;margin-right:4px">check_circle</span>
-            {{ session('success') }}
-        </div>
-    @endif
-
     <!-- ══ BASIC INFO ══ -->
     <div class="form-section">
         <div class="section-title mb-2">Basic Information</div>
@@ -216,23 +209,27 @@
         <div class="section-title mb-2">Images</div>
         <div class="row g-4">
 
-            <!-- Logo Image -->
+           <!-- Logo Image -->
             <div class="col-md-4">
                 <label style="font-size:.73rem;font-weight:600;color:var(--muted);display:block;margin-bottom:8px">
                     School Logo
                 </label>
                 <div class="photo-upload-box">
-                    <span class="material-icons-round">corporate_fare</span>
-                    <span class="lbl">Click to upload logo</span>
+                    @if($logo_image)
+                        @if($this->safePreviewUrl($logo_image))
+                            <img src="{{ $this->safePreviewUrl($logo_image) }}" alt="Preview"
+                                style="max-height:80px;max-width:100%;object-fit:contain;margin-bottom:6px">
+                        @else
+                            <span class="material-icons-round">check_circle</span>
+                            <span class="lbl">File selected</span>
+                        @endif
+                    @else
+                        <span class="material-icons-round">corporate_fare</span>
+                        <span class="lbl">Click to upload logo</span>
+                    @endif
                     <small style="color:#bbb;font-size:.7rem">JPG, PNG up to 2MB</small>
                     <input type="file" wire:model="logo_image" accept="image/*">
                 </div>
-                @if($logo_image)
-                    <div class="mt-2 text-center">
-                        <img src="{{ $logo_image->temporaryUrl() }}"
-                             style="max-height:60px;border-radius:6px;border:1px solid #eee">
-                    </div>
-                @endif
                 @error('logo_image') <span class="text-danger">{{ $message }}</span> @enderror
             </div>
 
@@ -242,17 +239,21 @@
                     Signature
                 </label>
                 <div class="photo-upload-box">
-                    <span class="material-icons-round">draw</span>
-                    <span class="lbl">Click to upload signature</span>
+                    @if($signature_image)
+                        @if($this->safePreviewUrl($signature_image))
+                            <img src="{{ $this->safePreviewUrl($signature_image) }}" alt="Preview"
+                                style="max-height:80px;max-width:100%;object-fit:contain;margin-bottom:6px">
+                        @else
+                            <span class="material-icons-round">check_circle</span>
+                            <span class="lbl">File selected</span>
+                        @endif
+                    @else
+                        <span class="material-icons-round">draw</span>
+                        <span class="lbl">Click to upload signature</span>
+                    @endif
                     <small style="color:#bbb;font-size:.7rem">JPG, PNG up to 2MB</small>
                     <input type="file" wire:model="signature_image" accept="image/*">
                 </div>
-                @if($signature_image)
-                    <div class="mt-2 text-center">
-                        <img src="{{ $signature_image->temporaryUrl() }}"
-                             style="max-height:60px;border-radius:6px;border:1px solid #eee">
-                    </div>
-                @endif
                 @error('signature_image') <span class="text-danger">{{ $message }}</span> @enderror
             </div>
 
@@ -262,15 +263,21 @@
                     Background
                 </label>
                 <div class="photo-upload-box">
-                    <span class="material-icons-round">wallpaper</span>
-                    <span class="lbl">Click to upload background</span>
+                    @if($background_image)
+                        @if($this->safePreviewUrl($background_image))
+                            <img src="{{ $this->safePreviewUrl($background_image) }}" alt="Preview"
+                                style="max-height:80px;max-width:100%;object-fit:contain;margin-bottom:6px">
+                        @else
+                            <span class="material-icons-round">check_circle</span>
+                            <span class="lbl">File selected</span>
+                        @endif
+                    @else
+                        <span class="material-icons-round">wallpaper</span>
+                        <span class="lbl">Click to upload background</span>
+                    @endif
                     <small style="color:#bbb;font-size:.7rem">JPG, PNG up to 2MB</small>
                     <input type="file" wire:model="background_image" accept="image/*">
                 </div>
-                @if ($background_image instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile)
-                    <img src="{{ $background_image->temporaryUrl() }}"
-                        class="bg-preview-img">
-                @endif
                 @error('background_image') <span class="text-danger">{{ $message }}</span> @enderror
             </div>
 

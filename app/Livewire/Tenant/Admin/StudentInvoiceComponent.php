@@ -17,12 +17,15 @@ class StudentInvoiceComponent extends Component
     public array $selectedIds = [];
     public bool  $selectAll   = false;
 
-    public function mount(int $id): void
+    public function mount(int $id)
     {
         $this->student = Student::with([
+            'session',
             'class',
             'section',
+            'category',
             'guardians',
+            'user',
         ])->findOrFail($id);
 
         $this->loadAllocations();

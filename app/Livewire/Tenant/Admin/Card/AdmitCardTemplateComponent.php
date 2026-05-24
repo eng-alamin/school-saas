@@ -52,7 +52,7 @@ class AdmitCardTemplateComponent extends Component
             'background_color' => 'required|string',
             'text_color'       => 'required|string',
             'accent_color'     => 'required|string',
-            'logo'             => 'nullable|image|mimes:jpg,jpeg,png,svg|max:2048',
+            'logo'             => 'nullable',
             'header_text'      => 'nullable|string|max:500',
             'instructions'     => 'nullable|string|max:2000',
             'footer_text'      => 'nullable|string|max:500',
@@ -100,14 +100,30 @@ class AdmitCardTemplateComponent extends Component
         $this->showViewModal = true;
     }
 
+    private function deleteOldFile($path): void
+    {
+        if (!$path) {
+            return;
+        }
+
+        $fullPath = public_path($path);
+
+        if (file_exists($fullPath)) {
+            unlink($fullPath);
+        }
+    }
+
     public function save(): void
     {
         $this->validate();
 
         $logoPath = $this->existingLogo;
         if ($this->logo) {
-            if ($logoPath) Storage::disk('public')->delete($logoPath);
-            $logoPath = $this->logo->store('admit-templates/logos', 'public');
+            if ($this->editId) {
+                $record = AdmitCardTemplate::find($this->editId);
+                if ($record?->logo_path) $this->deleteOldFile($record->logo_path);
+            }
+            $logoPath = \App\Helpers\TenantFileHelper::store($this->logo, 'cards');
         }
 
         $data = [
