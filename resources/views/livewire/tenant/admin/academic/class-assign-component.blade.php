@@ -133,7 +133,7 @@
                                 <label class="form-label">Subjects</label>
                                 <div wire:ignore>
                                     <select
-                                    wire:model.defer="subject_array"
+                                        wire:model.defer="subject_array"
                                         multiple
                                         title="Select Subject..."
                                         class="form-select w-100 selectpicker">
@@ -222,13 +222,12 @@
         // $('.selectpicker').selectpicker();
         document.addEventListener('livewire:init', function () {
 
-            function refreshPicker() {
-                $('.selectpicker').selectpicker('refresh');
-            }
-
             function initPicker() {
                 $('.selectpicker').selectpicker();
-                // refreshPicker();
+            }
+
+            function refreshPicker() {
+                $('.selectpicker').selectpicker('refresh');
             }
 
             // initial load

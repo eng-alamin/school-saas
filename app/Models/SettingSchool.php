@@ -7,4 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class SettingSchool extends Model
 {
     protected $guarded = [];
+
+    protected $casts = [
+        'weekends' => 'array',
+    ];
 }

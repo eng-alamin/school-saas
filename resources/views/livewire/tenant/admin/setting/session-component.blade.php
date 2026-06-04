@@ -4,8 +4,8 @@
 
       <!-- floating header -->
       <div class="mat-card-header header-pink-gradient">
-        <h5 id="cardHeaderTitleAllsections">Event Type</h5>
-        <p id="cardHeaderSubtitle">Manage event types, create, update, and organize academic types easily.</p>
+        <h5 id="cardHeaderTitleAllsections">Academic Session</h5>
+        <p id="cardHeaderSubtitle">Manage academic sessions, create, update, and organize sessions easily.</p>
       </div>
 
         <div class="card-header border-0">
@@ -13,7 +13,6 @@
             <div class="card-toolbar">
                 {{-- Left side --}}
                 <div class="card-toolbar-title">
-                    <!-- search in table -->
                     <div style="position:relative;display:inline-flex;align-items:center">
                         <span class="material-icons-round" style="position:absolute;left:10px;font-size:17px;color:var(--muted);pointer-events:none">search</span>
                         <input type="text" wire:model.live.debounce.300ms="search" id="tableSearch" placeholder="Search" style="border:1px solid rgba(0,0,0,.1);border-radius:8px;padding:7px 12px 7px 32px;font-size:.78rem;font-family:inherit;color:var(--dark);outline:none;background:#f8f9fa;width:220px"/>
@@ -21,7 +20,7 @@
                 </div>
 
                 <!-- Right Side -->
-                @if($types->total() > 10)
+                @if($sessions->total() > 10)
                     <div class="col-md-2">
                         <select class="form-select form-select-sm" wire:model.live="perPage">
                             <option value="10">10 / page</option>
@@ -30,11 +29,8 @@
                         </select>
                     </div>
                 @endif
-                <a href="{{ route('admin.event.list', ['tenant' => tenant('id')]) }}" class="btn-sm btn-outline bg-dark text-white">
-                    <span class="material-icons-round">keyboard_backspace</span> Back Event
-                </a>
                 <button class="btn-outline bg-dark text-white" wire:click="openCreate">
-                    <span class="material-icons-round">add</span> <span id="newSectionBtn">Add Type</span>
+                    <span class="material-icons-round">add</span> <span id="newSectionBtn">Add Session</span>
                 </button>
 
             </div>
@@ -46,21 +42,36 @@
                     <thead>
                         <tr>
                             <th>SL</th>
-                            <th wire:click="sortBy('name')" style="cursor:pointer">Name @if($sortField === 'name') {!! $sortDirection === 'asc' ? '↑' : '↓' !!} @endif </th>
+                            <th wire:click="sortBy('name')" style="cursor:pointer">Name @if($sortField === 'name') {!! $sortDirection === 'asc' ? '↑' : '↓' !!} @endif</th>
+                            <th wire:click="sortBy('start_date')" style="cursor:pointer">Start Date @if($sortField === 'start_date') {!! $sortDirection === 'asc' ? '↑' : '↓' !!} @endif</th>
+                            <th wire:click="sortBy('end_date')" style="cursor:pointer">End Date @if($sortField === 'end_date') {!! $sortDirection === 'asc' ? '↑' : '↓' !!} @endif</th>
+                            <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($types as $i => $type)
+                        @forelse($sessions as $i => $session)
                         <tr>
-                            <td class="text-muted">{{ $types->firstItem() + $i }}</td>
-                            <td> {{ $type->name }} </td>
+                            <td class="text-muted">{{ $sessions->firstItem() + $i }}</td>
+                            <td>{{ $session->name }}</td>
+                            <td>{{ $session->start_date ? \Carbon\Carbon::parse($session->start_date)->format('d M Y') : '—' }}</td>
+                            <td>{{ $session->end_date ? \Carbon\Carbon::parse($session->end_date)->format('d M Y') : '—' }}</td>
+                            <td>
+                                @if($session->is_current)
+                                    <span class="badge bg-success">Current</span>
+                                @else
+                                    <span class="badge bg-secondary">Inactive</span>
+                                @endif
+                            </td>
                             <td>
                                 <div class="d-flex gap-1">
-                                    <button class="act-btn edit" title="Edit" wire:click="openEdit({{ $type->id }})">
+                                    <button class="act-btn edit" title="Edit" wire:click="openEdit({{ $session->id }})">
                                         <span class="material-icons-round">drive_file_rename_outline</span>
                                     </button>
-                                    <button class="act-btn delete" title="Delete" wire:click="confirmDeleteRecord({{ $type->id }})">
+                                    <button class="act-btn delete" title="Delete"
+                                        wire:click="confirmDeleteRecord({{ $session->id }})"
+                                        @if($session->is_current) disabled title="Current session cannot be deleted" @endif
+                                        style="{{ $session->is_current ? 'opacity:.4;cursor:not-allowed;pointer-events:none;' : '' }}">
                                         <span class="material-icons-round">delete</span>
                                     </button>
                                 </div>
@@ -68,9 +79,9 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="8" class="text-center py-5 text-muted">
+                            <td colspan="6" class="text-center py-5 text-muted">
                                 <i class="bi bi-inbox display-5 d-block mb-2 opacity-25"></i>
-                                No types found. <a href="#" wire:click.prevent="openCreate">Create one now</a>.
+                                No sessions found. <a href="#" wire:click.prevent="openCreate">Create one now</a>.
                             </td>
                         </tr>
                         @endforelse
@@ -80,31 +91,52 @@
         </div>
 
         <div class="card-footer border-0 bg-white d-flex align-items-center justify-content-between flex-wrap gap-2 py-2 px-3">
-            <small class="text-muted">Showing {{ $types->firstItem() ?? 0 }}–{{ $types->lastItem() ?? 0 }} of {{ $types->total() }}</small>
-           {{ $types->links('vendor.pagination.custom') }}
+            <small class="text-muted">Showing {{ $sessions->firstItem() ?? 0 }}–{{ $sessions->lastItem() ?? 0 }} of {{ $sessions->total() }}</small>
+            {{ $sessions->links('vendor.pagination.custom') }}
         </div>
-        
+
     </div>
 
     {{-- ===== CREATE/EDIT MODAL ===== --}}
     @if($showModal)
         <div class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,.5);" wire:ignore.self>
-            <div class="modal-dialog modal-md modal-dialog-scrollable">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
                 <div class="modal-content">
                     <div class="modal-header border-0">
                         <h5 class="modal-title">
-                            {{ $editId ? 'Edit' : 'Create' }} Event Type
+                            {{ $editId ? 'Edit' : 'Create' }} Academic Session
                         </h5>
                         <button type="button" class="btn-close" wire:click="$set('showModal',false)"></button>
                     </div>
                     <div class="modal-body">
                         <form wire:submit.prevent="save">
                             <div class="row g-3">
+
                                 <div class="col-md-12">
-                                    <label class="form-label">Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control @error('name') is-invalid @enderror" wire:model.defer="name" placeholder="e.g. Type One">
+                                    <label class="form-label">Session Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control @error('name') is-invalid @enderror" wire:model.defer="name" placeholder="e.g. 2024-2025">
                                     @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label">Start Date</label>
+                                    <input type="date" class="form-control @error('start_date') is-invalid @enderror" wire:model.defer="start_date">
+                                    @error('start_date') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label">End Date</label>
+                                    <input type="date" class="form-control @error('end_date') is-invalid @enderror" wire:model.defer="end_date">
+                                    @error('end_date') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                </div>
+
+                                <div class="col-md-12">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="isCurrentCheck" wire:model.defer="is_current">
+                                        <label class="form-check-label" for="isCurrentCheck">Set as Current Session</label>
+                                    </div>
+                                </div>
+
                             </div>
                         </form>
                     </div>
@@ -129,7 +161,7 @@
                         <div style="width:56px;height:56px;border-radius:50%;background:#fee2e2;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
                             <i class="bi bi-exclamation-triangle text-danger" style="font-size:1.5rem;"></i>
                         </div>
-                        <h6 class="fw-700">Delete Type?</h6>
+                        <h6 class="fw-700">Delete Session?</h6>
                         <p class="text-muted small">This action cannot be undone.</p>
                     </div>
                     <div class="modal-footer justify-content-center border-0 pt-0">
@@ -153,37 +185,14 @@
             --primary-light: rgba(239,84,84,.12);
         }
 
-        /* ── CARD ── */
         .card { border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
         .card-header { background: #fff; border-bottom: 1px solid var(--border); border-radius: 12px 12px 0 0 !important; padding: 16px 20px; }
         .card-header .card-title { font-size: .95rem; font-weight: 600; margin: 0; }
- 
-        /* ── TABLE ── */
-        .table th { font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); border-bottom: 2px solid var(--border); }
-        .table td { vertical-align: middle; font-size: .875rem; }
-        .table > :not(caption) > * > * { padding: .7rem 1rem; }
- 
-        /* ── BADGES ── */
-        .badge-active { background: rgba(34,197,94,.12); color: #16a34a; }
-        .badge-inactive { background: rgba(107,114,128,.12); color: #6b7280; }
-        .badge-expired, .badge-cancelled, .badge-suspended { background: rgba(239,68,68,.12); color: #dc2626; }
-        .badge-used { background: rgba(59,130,246,.12); color: #2563eb; }
- 
-        /* ── AVATAR ── */
-        .avatar { width: 38px; height: 38px; border-radius: 8px; object-fit: cover; }
-        .avatar-placeholder {
-            width: 38px; height: 38px; border-radius: 8px;
-            background: var(--primary-light); color: var(--primary);
-            display: inline-flex; align-items: center; justify-content: center;
-            font-weight: 700; font-size: .875rem;
-        }
- 
-        /* ── MODAL ── */
+
         .modal-header { border-bottom: 1px solid var(--border); }
         .modal-footer { border-top: 1px solid var(--border); }
         .modal-title { font-weight: 600; font-size: 1rem; }
- 
-        /* ── FORM ── */
+
         .form-label { font-size: .8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
         .form-control, .form-select {
             border-radius: 8px; border: 1px solid var(--border);
@@ -193,93 +202,7 @@
         .form-control:focus, .form-select:focus {
             border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light);
         }
-        .form-check-input:checked { background-color: var(--primary); border-color: var(--primary); }
- 
-        /* Color picker */
-        .color-input-wrap { display: flex; align-items: center; gap: 8px; }
-        .color-input-wrap input[type="color"] {
-            width: 40px; height: 38px; padding: 2px; border-radius: 8px;
-            cursor: pointer; border: 1px solid var(--border);
-        }
- 
-        /* Buttons */
-        .btn-primary { background: var(--primary); border-color: var(--primary); }
-        .btn-primary:hover, .btn-primary:focus { background: #d63e3e; border-color: #d63e3e; }
+
         .btn-sm { font-size: .78rem; padding: .3rem .65rem; border-radius: 6px; }
-        .btn-icon { width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 7px; }
- 
-        /* Stat cards */
-        .stat-card { border-radius: 12px; padding: 20px; display: flex; align-items: center; gap: 16px; }
-        .stat-icon { width: 48px; height: 48px; border-radius: 10px; display: grid; place-items: center; font-size: 1.4rem; }
-        .stat-label { font-size: .75rem; color: var(--text-muted); font-weight: 500; }
-        .stat-value { font-size: 1.5rem; font-weight: 700; line-height: 1; }
- 
-        /* ID Card Preview */
-        .id-card-preview {
-            width: 325px; min-height: 200px; border-radius: 14px; overflow: hidden;
-            box-shadow: 0 8px 32px rgba(0,0,0,.15); margin: 0 auto;
-            position: relative; font-family: 'Inter', sans-serif;
-        }
-        .id-card-preview .card-header-band { padding: 16px; text-align: center; }
-        .id-card-preview .card-body-area { padding: 14px 16px; display: flex; gap: 14px; }
-        .id-card-preview .card-photo {
-            width: 80px; height: 95px; border-radius: 8px;
-            object-fit: cover; border: 3px solid rgba(255,255,255,.5);
-        }
- 
-        /* Print */
-        @media print {
-            .sidebar, .topbar, .no-print { display: none !important; }
-            .main-content { margin: 0; padding: 0; }
-            .print-area { display: block !important; }
-        }
- 
-        .alert { border-radius: 10px; font-size: .875rem; }
- 
-        /* Subject rows */
-        .subject-row { background: var(--bg); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; }
- 
-
-        /* Pagination */
-        .custom-pagination {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .custom-pagination li {
-            list-style: none;
-        }
-
-        .custom-pagination button {
-            min-width: 38px;
-            height: 38px;
-            border-radius: 10px;
-            border: 1px solid #e0e0e0;
-            background: #f5f5f5;
-            color: #444;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all .2s ease;
-        }
-
-        /* Hover */
-        .custom-pagination button:hover {
-            background: #eee;
-        }
-
-        /* Active (Pink) */
-        .custom-pagination button.active {
-            background: linear-gradient(195deg, #ec407a, #d81b60);
-            color: #fff;
-            border: none;
-            box-shadow: 0 4px 12px rgba(216,27,96,.4);
-        }
-
-        /* Disabled */
-        .custom-pagination button:disabled {
-            opacity: .5;
-            cursor: not-allowed;
-        }
     </style>
 @endpush

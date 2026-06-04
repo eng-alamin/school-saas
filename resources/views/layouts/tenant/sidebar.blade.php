@@ -317,6 +317,8 @@
         <div class="nav2-collapse {{ str_contains(request()->url(), 'setting') == true ? 'show' : '' }}">
           <ul>
             <li class="nav2-item"><a href="{{route('admin.setting.school', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'setting/school') == true ? 'active' : '' }}"><span class="nav2-icon">S</span><span class="nav2-label" id="nav-school-settings">School Settings</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.setting.sessions', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'setting/sessions') == true ? 'active' : '' }}"><span class="nav2-icon">S</span><span class="nav2-label" id="nav-session-settings">Session Settings</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.setting.backups', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'setting/backups') == true ? 'active' : '' }}"><span class="nav2-icon">B</span><span class="nav2-label" id="nav-session-settings">Database Backup</span></a></li>
             <li class="nav2-item"><div class="nav2-link"><span class="nav2-icon">T</span><span class="nav2-label" id="nav-translations">Translations</span></div></li>
             <li class="nav2-item"><div class="nav2-link"><span class="nav2-icon">N</span><span class="nav2-label" id="nav-cronjob">Cron Job</span></div></li>
             <li class="nav2-item"><div class="nav2-link"><span class="nav2-icon">N</span><span class="nav2-label" id="nav-system-student-field">System Student Field</span></div></li>

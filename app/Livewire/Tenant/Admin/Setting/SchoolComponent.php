@@ -71,6 +71,8 @@ class SchoolComponent extends Component
         'language'                 => 'required|string',
         'timezone'                 => 'required|string',
         'weekends'                 => 'nullable|array',
+        // 'weekends'                 => 'nullable|string',
+        'weekends.*' => 'string|in:Saturday,Sunday,Monday,Tuesday,Wednesday,Thursday,Friday',
         'unique_roll'              => 'required|in:class_wise,section_wise,disabled',
         'teacher_restricted'       => 'boolean',
 

@@ -20,7 +20,7 @@ Route::middleware('guest')->group(function () {
         Route::get('/login', \App\Livewire\Tenant\Auth\LoginComponent::class)->name('tenant.login');
     });
 
-Route::get('/', function () {dd(DB::connection()->getDatabaseName()); })->name('home');
+// Route::get('/', function () {dd(DB::connection()->getDatabaseName()); })->name('home');
 // Route::get('/login', \App\Livewire\Tenant\Auth\LoginComponent::class)->name('tenant.login');
 
 // Route::middleware(['auth'])->group(function () {
@@ -133,5 +133,7 @@ Route::get('/', function () {dd(DB::connection()->getDatabaseName()); })->name('
         Route::get('/inventory/sale/{id}/edit', \App\Livewire\Tenant\Admin\Inventory\SaleEditComponent::class)->name('admin.inventory.sale.edit');
         
         Route::get('setting/school', \App\Livewire\Tenant\Admin\Setting\SchoolComponent::class)->name('admin.setting.school');
+        Route::get('setting/sessions', \App\Livewire\Tenant\Admin\Setting\SessionComponent::class)->name('admin.setting.sessions');
+        Route::get('setting/backups', \App\Livewire\Tenant\Admin\Setting\BackupComponent::class)->name('admin.setting.backups');
     // });
 });
