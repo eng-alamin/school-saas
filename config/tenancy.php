@@ -18,9 +18,9 @@ return [
      */
     'central_domains' => [
         'goldenscissorsac.com',
-        // 'school-saas.test',
-        // 'localhost',
-        // '127.0.0.1',
+        'school-saas.test',
+        'localhost',
+        '127.0.0.1',
     ],
 
     /**
@@ -53,7 +53,7 @@ return [
          * Tenant database names are created like this:
          * prefix + tenant_id + suffix.
          */
-        'prefix' => 'tenant',
+        'prefix' => 'goldensc_tenant',
         'suffix' => '',
 
         /**
