@@ -17,11 +17,10 @@ return [
      * Only relevant if you're using the domain or subdomain identification middleware.
      */
     'central_domains' => [
-        // 'school.letsgochinaofficial.com',
-        'school-saas.test',
-        'school.com',
-        'localhost',
-        '127.0.0.1',
+        'goldenscissorsac.com',
+        // 'school-saas.test',
+        // 'localhost',
+        // '127.0.0.1',
     ],
 
     /**
