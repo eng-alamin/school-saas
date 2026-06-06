@@ -25,10 +25,10 @@ foreach (config('tenancy.central_domains') as $domain) {
     //     return redirect()->back()->with('success','Thanks for the fast site!');
     // })->name('try');
 
-    // Route::get('clear', function () {
-    //     Artisan::call('optimize:clear');
-    //     return redirect()->back()->with('success','Thanks for the fast site!');
-    // })->name('clear');
+    Route::get('clear', function () {
+        Artisan::call('optimize:clear');
+        return redirect()->back()->with('success','Thanks for the fast site!');
+    })->name('clear');
     // Route::get('backup', function () {
     //     // Artisan::call('backup:clean');
     //     Artisan::call('backup:run');
