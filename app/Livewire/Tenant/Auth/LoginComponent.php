@@ -3,20 +3,22 @@
 namespace App\Livewire\Tenant\Auth;
 
 use Livewire\Component;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
 
 class LoginComponent extends Component
 {
-    public $email = '';
+    public $email    = '';
     public $password = '';
     public $remember = false;
 
     protected $rules = [
-        'email' => 'required|email',
+        'email'    => 'required|email',
         'password' => 'required|min:6',
     ];
-
+    
     protected function messages()
     {
         return [
@@ -27,25 +29,70 @@ class LoginComponent extends Component
         ];
     }
 
+    protected function throttleKey(): string
+    {
+        return Str::lower($this->email) . '|' . request()->ip();
+    }
+
     public function login()
     {
         $this->validate();
 
-        if (!Auth::attempt([
-            'email' => $this->email,
-            'password' => $this->password,
-        ], $this->remember)) {
-
-            $this->reset('password');
-
-            $this->addError('email', 'These credentials do not match our records.');
-
+        if (RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
+            $seconds = RateLimiter::availableIn($this->throttleKey());
+            $this->addError('email', "Too many login attempts. Please try again in {$seconds} seconds.");
             return;
         }
 
+        if (! Auth::attempt([
+            'email'    => $this->email,
+            'password' => $this->password,
+        ], $this->remember)) {
+
+            RateLimiter::hit($this->throttleKey(), 60);
+            $this->reset('password');
+            $this->addError('email', 'These credentials do not match our records.');
+            return;
+        }
+
+        RateLimiter::clear($this->throttleKey());
+
         request()->session()->regenerate();
 
-        $this->redirect(route('tenant.dashboard', ['tenant' => tenant('id')]), navigate: true);
+        // SESSION_DRIVER=file হওয়ায় sessions table এ manually insert করতে হচ্ছে
+        $this->recordSession();
+
+        $this->redirect(
+            route('tenant.dashboard', ['tenant' => tenant('id')]),
+            navigate: true
+        );
+    }
+
+    protected function recordSession(): void
+    {
+        $sessionId = request()->session()->getId();
+        $userId    = Auth::id();
+        $now       = time();
+
+        $exists = DB::table('sessions')->where('id', $sessionId)->exists();
+
+        if ($exists) {
+            DB::table('sessions')->where('id', $sessionId)->update([
+                'user_id'       => $userId,
+                'ip_address'    => request()->ip(),
+                'user_agent'    => request()->userAgent(),
+                'last_activity' => $now,
+            ]);
+        } else {
+            DB::table('sessions')->insert([
+                'id'            => $sessionId,
+                'user_id'       => $userId,
+                'ip_address'    => request()->ip(),
+                'user_agent'    => request()->userAgent(),
+                'payload'       => '',
+                'last_activity' => $now,
+            ]);
+        }
     }
 
     public function render()

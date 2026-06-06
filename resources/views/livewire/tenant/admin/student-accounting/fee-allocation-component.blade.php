@@ -114,7 +114,7 @@
                                    value="{{ $student['id'] }}">
                         </td>
                         <td>{{ $i + 1 }}</td>
-                        <td>{{ $student['full_name'] }}</td>
+                        <td>{{ $student['name'] }}</td>
                         <td>{{ $student['student_id'] ?? '—' }}</td>
                         <td>{{ $student['roll_no'] ?? '—' }}</td>
                         <td>{{ $student['gender'] ?? '—' }}</td>

@@ -130,20 +130,25 @@
 
       <!-- Profile Avatar -->
       <div class="topnav-dropdown-wrap">
-        <img src="https://i.pravatar.cc/80?img=47" class="topnav-avatar" alt="User" onclick="toggleDropdown('profileDropdown', event)" style="cursor:pointer"/>
+        <img src="{{ auth()->user()->avatar ? asset(auth()->user()->avatar) : global_asset('assets/img/default-avatar.jpg') }}" class="topnav-avatar" alt="{{ auth()->user()->name}}" onclick="toggleDropdown('profileDropdown', event)" style="cursor:pointer"/>
         <div class="topnav-dropdown" id="profileDropdown" style="min-width:220px">
           <div class="profile-dropdown-header">
-            <img src="https://i.pravatar.cc/80?img=47" alt="User">
+            <img src="{{ auth()->user()->avatar ? asset(auth()->user()->avatar) : global_asset('assets/img/default-avatar.jpg') }}" alt="{{ auth()->user()->name}}">
             <div>
-              <div class="pd-name">Brooklyn Alice</div>
-              <div class="pd-email">brooklyn@example.com</div>
+              <div class="pd-name">{{ auth()->user()->name}}</div>
+              <div class="pd-email">{{ auth()->user()->email}}</div>
             </div>
           </div>
-          <div class="pd-menu-item"><span class="material-icons-round">person</span> My Profile</div>
-          <div class="pd-menu-item"><span class="material-icons-round">edit</span> Edit Profile</div>
-          <div class="pd-menu-item"><span class="material-icons-round">receipt_long</span> Billing</div>
-          <div class="pd-menu-item"><span class="material-icons-round">settings</span> Account Settings</div>
-          <div class="pd-menu-item danger"><span class="material-icons-round">logout</span> Logout</div>
+          <a href="{{ route('admin.profile.overview', ['tenant' => tenant('id')]) }}" class="pd-menu-item"><span class="material-icons-round">person</span> My Profile</a>
+          <a href="{{ route('admin.profile.setting', ['tenant' => tenant('id')]) }}" class="pd-menu-item"><span class="material-icons-round">edit</span> Edit Profile</a>
+          {{-- <div class="pd-menu-item"><span class="material-icons-round">receipt_long</span> Billing</div>
+          <div class="pd-menu-item"><span class="material-icons-round">settings</span> Account Settings</div> --}}
+          <a href="{{route('logout', ['tenant' => tenant('id')]) }} " class="pd-menu-item danger" onclick="event.preventDefault(); document.getElementById('logout-form').submit()">
+              <span class="material-icons-round">logout</span> Logout
+          </a>
+          <form id="logout-form" action="{{ route('logout', ['tenant' => tenant('id')]) }}" method="POST" style="display:none;">
+              @csrf
+          </form>
         </div>
       </div>
     </div>

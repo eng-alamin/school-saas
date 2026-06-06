@@ -16,16 +16,21 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('guest')->group(function () {
-        Route::get('/login', \App\Livewire\Tenant\Auth\LoginComponent::class)->name('tenant.login');
-    });
+
 
 // Route::get('/', function () {dd(DB::connection()->getDatabaseName()); })->name('home');
 // Route::get('/login', \App\Livewire\Tenant\Auth\LoginComponent::class)->name('tenant.login');
 
 // Route::middleware(['auth'])->group(function () {
     Route::domain('{tenant}.school-saas.test')->group(function () {
-        
+
+        Route::middleware('guest')->group(function () {
+            Route::get('/login', \App\Livewire\Tenant\Auth\LoginComponent::class)->name('login');
+        });
+
+        // Theme
+        Route::get('/', \App\Livewire\Tenant\Theme\HomeComponent::class)->name('home');
+
         Route::get('/dashboard', \App\Livewire\Tenant\Admin\DashboardComponent::class)->name('tenant.dashboard');
         Route::get('/student/create', \App\Livewire\Tenant\Admin\Student\StudentAddComponent::class)->name('admin.student.add');
         Route::get('/student/list', \App\Livewire\Tenant\Admin\Student\StudentListComponent::class)->name('admin.student.list');
@@ -135,5 +140,18 @@ Route::middleware('guest')->group(function () {
         Route::get('setting/school', \App\Livewire\Tenant\Admin\Setting\SchoolComponent::class)->name('admin.setting.school');
         Route::get('setting/sessions', \App\Livewire\Tenant\Admin\Setting\SessionComponent::class)->name('admin.setting.sessions');
         Route::get('setting/backups', \App\Livewire\Tenant\Admin\Setting\BackupComponent::class)->name('admin.setting.backups');
-    // });
-});
+        Route::get('setting/theme', \App\Livewire\Tenant\Admin\Setting\ThemeComponent::class)->name('admin.setting.theme');
+
+        Route::get('profile/overview', \App\Livewire\Tenant\Admin\Profile\OverviewComponent::class)->name('admin.profile.overview');
+        Route::get('profile/setting', \App\Livewire\Tenant\Admin\Profile\SettingComponent::class)->name('admin.profile.setting');
+        Route::get('profile/activity', \App\Livewire\Tenant\Admin\Profile\ActivityComponent::class)->name('admin.profile.activity');
+            
+        Route::post('logout', function () {
+            Auth::logout();
+            request()->session()->invalidate();
+            request()->session()->regenerateToken();
+            return redirect()->route('tenant.login');
+        })->name('logout');
+
+    });
+// });

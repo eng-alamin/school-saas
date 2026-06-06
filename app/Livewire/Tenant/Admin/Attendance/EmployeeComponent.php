@@ -25,42 +25,63 @@ class EmployeeComponent extends Component
             return;
         }
 
-        $employeesQuery = Employee::query();
+        $employeesQuery = Employee::with([
+            'department',
+            'designation',
+            'user',
+        ]);
 
         if ($this->filterRole) {
-            $employeesQuery->where('role', $this->filterRole);
+
+            $employeesQuery->whereHas('user', function ($query) {
+
+                $query->where('role', $this->filterRole);
+
+            });
+
         }
 
-        $employees = $employeesQuery->orderBy('name')->get();
+        $employees = $employeesQuery
+            ->orderBy('name')
+            ->get();
 
         if ($employees->isEmpty()) {
-            $this->dispatch('toast', type: 'error', message: 'No employees found.');
-            $this->hasAttendance = false;
-            return;
-        }
 
-        $existing = Attendance::where('date', $this->date)
-            ->where('type', 'employee')
-            ->get()
-            ->keyBy('attendable_id');
+        $this->dispatch(
+            'toast',
+            type: 'error',
+            message: 'No employees found.'
+        );
 
-        $this->data = $employees->map(function ($employee) use ($existing) {
+        $this->hasAttendance = false;
 
-            $att = $existing[$employee->id] ?? null;
-
-            return [
-                'employee_id' => $employee->id,
-                'name'        => $employee->name,
-                'designation' => $employee->designation?->name,
-                'department'  => $employee->department?->name,
-
-                'status'      => $att->status ?? 'present',
-                'remarks'     => $att->remarks ?? '',
-            ];
-        })->toArray();
-
-        $this->hasAttendance = true;
+        return;
     }
+
+    $existing = Attendance::where('date', $this->date)
+        ->where('type', 'employee')
+        ->get()
+        ->keyBy('attendable_id');
+
+    $this->data = $employees->map(function ($employee) use ($existing) {
+
+        $att = $existing[$employee->id] ?? null;
+
+        return [
+            'employee_id' => $employee->id,
+            'name'        => $employee->name,
+            'designation' => $employee->designation?->name,
+            'department'  => $employee->department?->name,
+            'role'        => $employee->user?->role,
+
+            'status'      => $att->status ?? 'present',
+            'remarks'     => $att->remarks ?? '',
+        ];
+
+    })->toArray();
+
+    $this->hasAttendance = true;
+}
 
     public function save()
     {

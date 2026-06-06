@@ -75,7 +75,7 @@
 
                 <!-- buttons right -->
 
-                    <a href="{{ route('admin.homework.add') }}" target="_blank" id="newHomeworkBtn" class="btn-outline btn-outline bg-dark text-white">
+                    <a href="{{ route('admin.homework.add', ['tenant' => tenant('id')]) }}" target="_blank" id="newHomeworkBtn" class="btn-outline btn-outline bg-dark text-white">
                     <span class="material-icons-round">add</span> <span id="newHomeworkBtn">New Homework</span>
                 </a>
 

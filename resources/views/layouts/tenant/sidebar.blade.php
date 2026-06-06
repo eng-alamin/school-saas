@@ -13,14 +13,19 @@
 
   <!-- User -->
   <div class="sidebar-user" id="userToggle">
-    <img src="https://i.pravatar.cc/80?img=47" class="user-avatar" alt="Brooklyn">
-    <span class="user-name" id="userNameSidebar">Brooklyn Alice</span>
+    <img src="{{ auth()->user()->avatar ? asset(auth()->user()->avatar) : global_asset('assets/img/default-avatar.jpg') }}" class="user-avatar" alt="{{ auth()->user()->name}}">
+    <span class="user-name">{{ auth()->user()->name}}</span>
     <span class="material-icons-round user-arrow" id="userArrow">expand_more</span>
   </div>
   <div class="user-dropdown" id="userDropdown">
-    <a href="#"><span class="ud-icon">MP</span> <span id="ud-profile">My Profile</span></a>
-    <a href="#"><span class="ud-icon">S</span> <span id="ud-settings">Settings</span></a>
-    <a href="#"><span class="ud-icon">L</span> <span id="ud-logout">Logout</span></a>
+    <a href="{{ route('admin.profile.overview', ['tenant' => tenant('id')]) }}"><span class="ud-icon">MP</span> <span id="ud-profile">My Profile</span></a>
+    <a href="{{ route('admin.profile.setting', ['tenant' => tenant('id')]) }}"><span class="ud-icon">S</span> <span id="ud-settings">Settings</span></a>
+    <a href="{{route('logout', ['tenant' => tenant('id')]) }} " class="pd-menu-item danger" onclick="event.preventDefault(); document.getElementById('logout-form').submit()">
+        <span class="ud-icon">L</span> <span id="ud-logout">Logout</span>
+    </a>
+    <form id="logout-form" action="{{ route('logout', ['tenant' => tenant('id')]) }}" method="POST" style="display:none;">
+        @csrf
+    </form>
   </div>
 
   <!-- Scrollable nav -->
@@ -245,8 +250,8 @@
             <li class="nav2-item"><a href="{{route('admin.student-accounting.fee.fines', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'student-accounting/fee-fines') == true ? 'active' : '' }}"><span class="nav2-icon">N</span><span class="nav2-label" id="nav-fine-setup">Fine Setup</span></a></li>
             <li class="nav2-item"><a href="{{route('admin.student-accounting.fee.allocations', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'student-accounting/fee-allocations') == true ? 'active' : '' }}"><span class="nav2-icon">N</span><span class="nav2-label" id="nav-fees-allocation">Fees Allocation</span></a></li>
             <li class="nav2-item"><a href="{{route('admin.student-accounting.fee.invoices', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'student-accounting/fee-invoices') == true ? 'active' : '' }}"><span class="nav2-icon">N</span><span class="nav2-label" id="nav-fees-pay-invoice">Fees Pay / Invoice</span></a></li>
-            <li class="nav2-item"><a href="{{route('admin.student-accounting.fee.types', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'student-accounting/fee-types') == true ? 'active' : '' }}"><span class="nav2-icon">N</span><span class="nav2-label" id="nav-due-fees-invoice">Due Fees Invoice</span></a></li>
-            <li class="nav2-item"><a href="{{route('admin.student-accounting.fee.types', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'student-accounting/fee-types') == true ? 'active' : '' }}"><span class="nav2-icon">N</span><span class="nav2-label" id="nav-fees-reminder">Fees Reminder</span></a></li>
+            {{-- <li class="nav2-item"><a href="{{route('admin.student-accounting.fee.types', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'student-accounting/fee-types') == true ? 'active' : '' }}"><span class="nav2-icon">N</span><span class="nav2-label" id="nav-due-fees-invoice">Due Fees Invoice</span></a></li>
+            <li class="nav2-item"><a href="{{route('admin.student-accounting.fee.types', ['tenant' => tenant('id')]) }}" class="nav2-link {{ str_contains(request()->url(), 'student-accounting/fee-types') == true ? 'active' : '' }}"><span class="nav2-icon">N</span><span class="nav2-label" id="nav-fees-reminder">Fees Reminder</span></a></li> --}}
           </ul>
         </div>
       </li>
