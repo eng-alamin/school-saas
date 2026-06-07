@@ -16,7 +16,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-    Route::domain('{tenant}.school-saas.test')->group(function () {
+    //   Route::domain('{tenant}.school-saas.test')->group(function () {
+    Route::domain('{tenant}.goldenscissorsac.com')->group(function () {
 
         // Theme
         Route::get('/', \App\Livewire\Tenant\Theme\HomeComponent::class)->name('.tenant.home');
