@@ -18,7 +18,7 @@ class PaymentComponent extends Component
 
     // ── Filters ───────────────────────────────────────────────────
     public string $role        = '';
-    public string $month       = '';   // format: Y-m  (e.g. 2026-05)
+    public string $month       = '';
     public bool   $hasFiltered = false;
 
     // ── Table controls ────────────────────────────────────────────
@@ -55,7 +55,6 @@ class PaymentComponent extends Component
         $this->paymentDate = now()->format('Y-m-d');
     }
 
-    // ── Lifecycle ─────────────────────────────────────────────────
     public function updatedSearch(): void  { $this->resetPage(); }
     public function updatedPerPage(): void { $this->resetPage(); }
     public function updatedRole(): void
@@ -64,7 +63,6 @@ class PaymentComponent extends Component
         $this->resetPage();
     }
 
-    // ── Filter ────────────────────────────────────────────────────
     public function filter(): void
     {
         $this->validate([
@@ -80,7 +78,6 @@ class PaymentComponent extends Component
         $this->resetPage();
     }
 
-    // ── Reset ─────────────────────────────────────────────────────
     public function resetForm(): void
     {
         $this->role        = '';
@@ -91,11 +88,9 @@ class PaymentComponent extends Component
         $this->resetValidation();
     }
 
-    // ── Open Pay Now modal ────────────────────────────────────────
     public function openPayModal(int $employeeId): void
     {
-        // FIX 6: Guard against paying an already-paid employee for this month.
-        $monthDate = Carbon::createFromFormat('Y-m', $this->month)->startOfMonth()->toDateString();
+        $monthDate   = Carbon::createFromFormat('Y-m', $this->month)->startOfMonth()->toDateString();
         $alreadyPaid = SalaryPayment::where('employee_id', $employeeId)
             ->where('month', $monthDate)
             ->where('status', 'paid')
@@ -115,7 +110,6 @@ class PaymentComponent extends Component
         $this->showPayModal  = true;
     }
 
-    // ── Process payment ───────────────────────────────────────────
     public function processPayment(): void
     {
         $this->validate([
@@ -123,9 +117,7 @@ class PaymentComponent extends Component
             'paymentMethod' => 'required|in:cash,bank,cheque,mobile_banking',
         ]);
 
-        $monthDate = Carbon::createFromFormat('Y-m', $this->month)->startOfMonth()->toDateString();
-
-        // FIX 6: Double-check on server side before writing.
+        $monthDate   = Carbon::createFromFormat('Y-m', $this->month)->startOfMonth()->toDateString();
         $alreadyPaid = SalaryPayment::where('employee_id', $this->payEmployeeId)
             ->where('month', $monthDate)
             ->where('status', 'paid')
@@ -159,9 +151,9 @@ class PaymentComponent extends Component
                     'net_salary'       => $net,
                     'payment_date'     => $this->paymentDate,
                     'payment_method'   => $this->paymentMethod,
-                    'account_id'       => $this->accountId    ?: null,
+                    'account_id'       => $this->accountId     ?: null,
                     'transaction_id'   => $this->transactionId ?: null,
-                    'note'             => $this->note          ?: null,
+                    'note'             => $this->note           ?: null,
                     'status'           => 'paid',
                     'paid_by'          => Auth::id(),
                 ]
@@ -172,12 +164,11 @@ class PaymentComponent extends Component
         $this->dispatch('notify', type: 'success', message: 'Salary paid successfully.');
     }
 
-    // ── Open Payslip modal ────────────────────────────────────────
     public function openPayslip(int $employeeId): void
     {
         $monthDate = Carbon::createFromFormat('Y-m', $this->month)->startOfMonth()->toDateString();
 
-        $payment = SalaryPayment::with(['employee.designation', 'employee.department'])
+        $payment = SalaryPayment::with(['employee.user', 'employee.designation', 'employee.department'])
             ->where('employee_id', $employeeId)
             ->where('month', $monthDate)
             ->first();
@@ -187,10 +178,7 @@ class PaymentComponent extends Component
             return;
         }
 
-        // FIX 4: $payment->toArray() returns Carbon objects for date-cast columns
-        //         when the model has date casts. Blade then calls \Carbon\Carbon::parse()
-        //         on an object and throws. Serialize dates to plain strings first.
-        $data = $payment->toArray();
+        $data                 = $payment->toArray();
         $data['month']        = $payment->month?->format('Y-m-d');
         $data['payment_date'] = $payment->payment_date?->format('Y-m-d');
 
@@ -198,32 +186,30 @@ class PaymentComponent extends Component
         $this->showPayslip = true;
     }
 
-    // ── Employee query ────────────────────────────────────────────
     private function employeeQuery()
     {
         $monthDate = Carbon::createFromFormat('Y-m', $this->month)->startOfMonth()->toDateString();
 
-        return Employee::with(['designation', 'department'])
-            ->when($this->role, fn($q) => $q->where('role', $this->role))
+        return Employee::with(['user', 'designation', 'department'])
+            ->whereHas('user', fn($q) => $q->where('role', $this->role))
             ->when($this->search, function ($q) {
                 $s = '%' . $this->search . '%';
                 $q->where(function ($qq) use ($s) {
-                    $qq->where('name',     'like', $s)
-                       ->orWhere('mobile', 'like', $s);
+                    $qq->whereHas('user', fn($uq) => $uq->where('name', 'like', $s)
+                            ->orWhere('phone', 'like', $s)
+                            ->orWhere('email', 'like', $s))
+                       ->orWhere('employees.name', 'like', $s)
+                       ->orWhere('employees.mobile', 'like', $s);
                 });
             })
             ->addSelect([
                 'employees.*',
 
-                // salary_assigns subqueries
                 'sa_grade' => DB::table('salary_assigns')
                     ->select('salary_grade')
                     ->whereColumn('employee_id', 'employees.id')
                     ->limit(1),
 
-                // FIX 5: 'sa_basic' was commented out but blade reads
-                //         $employee->sa_basic — always null without this subquery.
-                //         Uncommented and restored.
                 'sa_basic' => DB::table('salary_assigns')
                     ->select('basic_salary')
                     ->whereColumn('employee_id', 'employees.id')
@@ -234,7 +220,6 @@ class PaymentComponent extends Component
                     ->whereColumn('employee_id', 'employees.id')
                     ->limit(1),
 
-                // salary_payments subqueries for selected month
                 'salary_status' => SalaryPayment::select('status')
                     ->whereColumn('employee_id', 'employees.id')
                     ->where('month', $monthDate)
@@ -247,7 +232,6 @@ class PaymentComponent extends Component
             ]);
     }
 
-    // ── Render ────────────────────────────────────────────────────
     public function render()
     {
         $employees = $this->hasFiltered

@@ -18,7 +18,7 @@ class LoginComponent extends Component
         'email'    => 'required|email',
         'password' => 'required|min:6',
     ];
-    
+
     protected function messages()
     {
         return [
@@ -59,11 +59,35 @@ class LoginComponent extends Component
 
         request()->session()->regenerate();
 
-        // SESSION_DRIVER=file হওয়ায় sessions table এ manually insert করতে হচ্ছে
         $this->recordSession();
 
+        $this->redirectBasedOnRole(Auth::user());
+    }
+
+    private function redirectBasedOnRole($user): void
+    {
+        $dashboards = [
+            'admin'      => 'admin.dashboard',
+            'teacher'    => 'teacher.dashboard',
+            'student'    => 'student.dashboard',
+            'parent'     => 'parent.dashboard',
+            'accountant' => 'accountant.dashboard',
+        ];
+
+        $routeName = $dashboards[$user->role] ?? null;
+        $tenantId  = tenant('id');
+
+        if ($routeName && \Illuminate\Support\Facades\Route::has($routeName)) {
+            $this->redirect(
+                route($routeName, ['tenant' => $tenantId]),
+                navigate: true
+            );
+            return;
+        }
+
+        // Fallback
         $this->redirect(
-            route('tenant.dashboard', ['tenant' => tenant('id')]),
+            route('tenant.login', ['tenant' => $tenantId]),
             navigate: true
         );
     }

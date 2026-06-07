@@ -12,23 +12,26 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+
+        // ✅ role middleware register
+        $middleware->alias([
+            'role' => \App\Http\Middleware\RoleMiddleware::class,
+        ]);
+
         $middleware->redirectGuestsTo(function (Request $request) {
 
-        $host = $request->getHost();
+            $host = $request->getHost();
+            $centralDomains = config('tenancy.central_domains');
 
-        $centralDomains = config('tenancy.central_domains');
-
-        foreach ($centralDomains as $domain) {
-
-            if ($host === $domain) {
-                return route('central.login');
+            foreach ($centralDomains as $domain) {
+                if ($host === $domain) {
+                    return route('central.login');
+                }
             }
 
-        }
+            return $request->getScheme() . '://' . $host . '/login';
+        });
 
-        return route('tenant.login');
-
-    });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

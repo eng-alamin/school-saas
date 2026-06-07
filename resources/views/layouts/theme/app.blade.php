@@ -572,15 +572,26 @@
       <div class="d-flex align-items-center gap-3 flex-wrap">
         <a href="mailto:info@iconschool.com"><i class="bi bi-envelope me-1"></i>info@iconschool.com</a>
         <a href="tel:+19546481802"><i class="bi bi-telephone me-1"></i>+1-954-648-1802</a>
-        @auth
-            <a href="{{ route('tenant.dashboard', ['tenant' => tenant('id')]) }}" class="text-warning fw-semibold">
-                <i class="bi bi-speedometer2 me-1"></i>Dashboard
-            </a>
-        @else
-            <a href="{{ route('login', ['tenant' => tenant('id')]) }}" class="text-warning fw-semibold">
-                <i class="bi bi-box-arrow-in-right me-1"></i>Login
-            </a>
-        @endauth
+          @auth
+            @php
+                $dashboardRoutes = [
+                    'admin'      => 'admin.dashboard',
+                    'teacher'    => 'teacher.dashboard',
+                    'student'    => 'student.dashboard',
+                    'parent'     => 'parent.dashboard',
+                    'accountant' => 'accountant.dashboard',
+                ];
+                $role = auth()->user()->role;
+                $dashboardRoute = $dashboardRoutes[$role] ?? 'tenant.login';
+            @endphp
+              <a href="{{ route($dashboardRoute, ['tenant' => tenant('id')]) }}" class="text-warning fw-semibold">
+                  <i class="bi bi-speedometer2 me-1"></i>Dashboard
+              </a>
+          @else
+              <a href="{{ route('tenant.login', ['tenant' => tenant('id')]) }}" class="text-warning fw-semibold">
+                  <i class="bi bi-box-arrow-in-right me-1"></i>Login
+              </a>
+          @endauth
       </div>
     </div>
   </div>
@@ -625,12 +636,23 @@
         </li>
         <li class="nav-item"><a class="nav-link" href="#">Contact Us</a></li>
       </ul>
-      @auth
-            <a href="{{route('tenant.dashboard', ['tenant' => tenant('id')]) }}" class="nav-link btn-login ms-2">
+        @auth
+          @php
+              $dashboardRoutes = [
+                  'admin'      => 'admin.dashboard',
+                  'teacher'    => 'teacher.dashboard',
+                  'student'    => 'student.dashboard',
+                  'parent'     => 'parent.dashboard',
+                  'accountant' => 'accountant.dashboard',
+              ];
+              $role = auth()->user()->role;
+              $dashboardRoute = $dashboardRoutes[$role] ?? 'tenant.login';
+          @endphp
+            <a href="{{ route($dashboardRoute, ['tenant' => tenant('id')]) }}" class="nav-link btn-login ms-2">
                 <i class="bi bi-speedometer2 me-1"></i>Dashboard
             </a>
         @else
-            <a href="{{route('login', ['tenant' => tenant('id')]) }}" class="nav-link btn-login ms-2">
+            <a href="{{ route('tenant.login', ['tenant' => tenant('id')]) }}" class="nav-link btn-login ms-2">
                 <i class="bi bi-box-arrow-in-right me-1"></i>Login
             </a>
         @endauth

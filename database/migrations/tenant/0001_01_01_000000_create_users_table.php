@@ -13,17 +13,22 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->enum('role', ['super_admin','admin','employee','teacher','student','parent','accountant','librarian','receptionist']);
-            $table->string('name');
-            $table->string('username')->unique()->nullable();
-            $table->string('email')->unique()->nullable();
-            $table->string('phone')->unique()->nullable();
-            $table->string('avatar')->nullable();
+            $table->enum('role', ['admin', 'teacher', 'student', 'parent', 'accountant', 'employee'])->default('student');
+            $table->string('name', 100);
+            $table->string('username')->nullable()->unique();
+            $table->string('phone', 15)->nullable()->unique();
+            $table->string('email', 150)->nullable()->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->string('password', 255);
+            $table->string('avatar', 255)->nullable();
+            $table->boolean('is_verified')->default(false);
+            $table->boolean('is_active')->default(true);
             $table->rememberToken();
             $table->softDeletes();
             $table->timestamps();
+
+            $table->index('role');
+            $table->index('is_active');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

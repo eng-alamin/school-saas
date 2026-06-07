@@ -26,4 +26,9 @@ class AcademicClassAssign extends Model
     {
         return $this->hasMany(AcademicSection::class, 'class_id');
     }
+
+    public function teacherAssign()
+    {
+        return $this->hasOne(AcademicTeacherAssign::class, 'class_id', 'class_id')->where('section_id', $this->section_id);
+    }
 }

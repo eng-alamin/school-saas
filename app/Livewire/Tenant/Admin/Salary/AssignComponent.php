@@ -15,12 +15,11 @@ class AssignComponent extends Component
     public ?int   $designation_id = null;
 
     // ── Dynamic lists ─────────────────────────────────────────────
-    public array $designations  = [];
-    public array $employees     = [];
-    public array $salaryTemplate = [];   // [employee_id => salary_template_id]
-    public bool  $hasFiltered   = false;
+    public array $designations   = [];
+    public array $employees      = [];
+    public array $salaryTemplate = [];
+    public bool  $hasFiltered    = false;
 
-    // FIX: these were used in updatedRole() but never declared
     public array $selectedIds = [];
     public bool  $selectAll   = false;
 
@@ -30,7 +29,7 @@ class AssignComponent extends Component
     {
         $this->designation_id = null;
         $this->employees      = [];
-        $this->salaryTemplate  = [];
+        $this->salaryTemplate = [];
         $this->hasFiltered    = false;
         $this->selectedIds    = [];
         $this->selectAll      = false;
@@ -57,8 +56,8 @@ class AssignComponent extends Component
 
     private function loadEmployees(): void
     {
-        $employees = Employee::with('designation', 'department')
-            ->where('role', $this->role)
+        $employees = Employee::with(['user', 'designation', 'department'])
+            ->whereHas('user', fn($q) => $q->where('role', $this->role))
             ->when($this->designation_id, fn($q) => $q->where('designation_id', $this->designation_id))
             ->orderBy('name')
             ->get();
@@ -68,7 +67,6 @@ class AssignComponent extends Component
 
         foreach ($employees as $employee) {
             $existing = SalaryAssign::where('employee_id', $employee->id)->latest()->first();
-            // pre-fill with existing template id (not grade string)
             $this->salaryTemplate[$employee->id] = $existing?->salary_template_id ?? '';
         }
     }
@@ -86,9 +84,6 @@ class AssignComponent extends Component
             $templateId = $this->salaryTemplate[$employee['id']] ?? null;
             if (!$templateId) continue;
 
-            // FIX: load template to snapshot salary fields into salary_assigns.
-            // PaymentComponent reads basic_salary / total_allowance / etc.
-            // directly from salary_assigns — so we must store them here.
             $template = SalaryTemplate::find($templateId);
             if (!$template) continue;
 
@@ -105,15 +100,13 @@ class AssignComponent extends Component
                     'role'               => $this->role,
                     'designation_id'     => $this->designation_id,
                     'salary_template_id' => $templateId,
-
-                    // ── Snapshot ──────────────────────────────────
-                    'salary_grade'    => $template->salary_grade,
-                    'basic_salary'    => $basicSalary,
-                    'overtime_rate'   => $overtimeRate,
-                    'total_allowance' => $totalAllowance,
-                    'total_deduction' => $totalDeduction,
-                    'gross_salary'    => $gross,
-                    'net_salary'      => $net,
+                    'salary_grade'       => $template->salary_grade,
+                    'basic_salary'       => $basicSalary,
+                    'overtime_rate'      => $overtimeRate,
+                    'total_allowance'    => $totalAllowance,
+                    'total_deduction'    => $totalDeduction,
+                    'gross_salary'       => $gross,
+                    'net_salary'         => $net,
                 ]
             );
 

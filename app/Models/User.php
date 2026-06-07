@@ -57,4 +57,22 @@ class User extends Authenticatable
     {
         return $this->hasOne(Employee::class, 'user_id');
     }
+
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+        public function isStudent(): bool
+    {
+        return $this->role === 'student';
+    }
+    
+    public function isParent(): bool
+    {
+        return $this->role === 'parent';
+    }
+    
+
 }
