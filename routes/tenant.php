@@ -20,7 +20,9 @@ use Illuminate\Support\Facades\Route;
     Route::domain('{tenant}.goldenscissorsac.com')->group(function () {
 
         // Theme
-        Route::get('/', \App\Livewire\Tenant\Theme\HomeComponent::class)->name('.tenant.home');
+        Route::get('/', \App\Livewire\Tenant\Theme\HomeComponent::class)->name('theme.home');
+        Route::get('teachers', \App\Livewire\Tenant\Theme\TeacherComponent::class)->name('theme.teachers');
+        Route::get('events', \App\Livewire\Tenant\Theme\EventComponent::class)->name('theme.events');
 
         Route::middleware('guest')->group(function () {
             Route::get('/login', \App\Livewire\Tenant\Auth\LoginComponent::class)->name('tenant.login');
@@ -260,13 +262,13 @@ use Illuminate\Support\Facades\Route;
         // Student
         Route::middleware(['role:student'])->group(function () {
             Route::get('student/dashboard', \App\Livewire\Tenant\Student\DashboardComponent::class)->name('student.dashboard');
-            Route::get('teachers', \App\Livewire\Tenant\Student\TeacherComponent::class)->name('student.teachers');
+            Route::get('student/teachers', \App\Livewire\Tenant\Student\TeacherComponent::class)->name('student.teachers');
             Route::get('subjects', \App\Livewire\Tenant\Student\SubjectComponent::class)->name('student.subjects');
             Route::get('classes', \App\Livewire\Tenant\Student\ClassComponent::class)->name('student.classes');
             Route::get('leaves', \App\Livewire\Tenant\Student\LeaveComponent::class)->name('student.leaves');
             Route::get('homeworks', \App\Livewire\Tenant\Student\HomeworkComponent::class)->name('student.homeworks');
             Route::get('exams', \App\Livewire\Tenant\Student\ExamComponent::class)->name('student.exams');
-            Route::get('events', \App\Livewire\Tenant\Student\EventComponent::class)->name('student.events');
+            Route::get('student/events', \App\Livewire\Tenant\Student\EventComponent::class)->name('student.events');
             Route::get('profile-detail', \App\Livewire\Tenant\Student\Profile\DetailComponent::class)->name('student.profile.detail');
             Route::get('profile-edit', \App\Livewire\Tenant\Student\Profile\EditComponent::class)->name('student.profile.edit');
         });

@@ -2,7 +2,7 @@
 
     <div class="card">
 
-        <div class="mat-card-header header-pink-gradient">
+        <div class="card-header-floating card-header-gradient">
             <h5 id="cardHeaderTitleAllStudents">All Parents</h5>
             <p id="cardHeaderSubtitle">Manage parents, search by name, email or mobile.</p>
         </div>
